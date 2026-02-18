@@ -37,39 +37,3 @@ a:hover {
 .container-padding {
   @apply px-17;
 }
-
-@media (min-width: 360px) {
-  .container-padding {
-    @apply px-17;
-  }
-}
-
-@media (min-width: 640px) {
-  .container-padding {
-    @apply px-17;
-  }
-}
-
-@media (min-width: 960px) {
-  .container-padding {
-    @apply px-17;
-  }
-}
-
-@media (min-width: 1200px) {
-  .container-padding {
-    @apply px-17;
-  }
-}
-
-@media (min-width: 1440px) {
-  .container-padding {
-    @apply px-17;
-  }
-}
-
-@media (min-width: 1920px) {
-  .container-padding {
-    @apply px-17;
-  }
-}

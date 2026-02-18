@@ -8,19 +8,68 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-sans: var(--font-onest);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:hover {
+  color: inherit;
+}
+
+.modal-1080 {
+  max-width: 1080px;
+}
+
+.dropdown-toggle::after {
+  display: none !important;
+}
+
+.container-padding {
+  @apply px-17;
+}
+
+@media (min-width: 360px) {
+  .container-padding {
+    @apply px-17;
+  }
+}
+
+@media (min-width: 640px) {
+  .container-padding {
+    @apply px-17;
+  }
+}
+
+@media (min-width: 960px) {
+  .container-padding {
+    @apply px-17;
+  }
+}
+
+@media (min-width: 1200px) {
+  .container-padding {
+    @apply px-17;
+  }
+}
+
+@media (min-width: 1440px) {
+  .container-padding {
+    @apply px-17;
+  }
+}
+
+@media (min-width: 1920px) {
+  .container-padding {
+    @apply px-17;
+  }
 }

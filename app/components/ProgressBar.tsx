@@ -7,6 +7,9 @@ import progressBarStore from "@/app/store/ProgressBarStore";
 import {observer} from "mobx-react-lite";
 import {ProgressBarProps} from "@/app/types/ProgressBarTypes";
 import ProgressBarFilters from "@/app/components/ProgreesBarDropdown";
+import toast from "react-hot-toast";
+import watchModelStore from "@/app/store/WatchModelStore";
+import showToaster from "@/app/features/Toaster";
 
 const ProgressBar = observer(() => {
     const [isSticky, setIsSticky] = React.useState(false);
@@ -75,7 +78,7 @@ const ProgressBar = observer(() => {
                     </div>
                     <div
                         className="py-2 px-3 bg-[#5078DF] rounded-[100px] text-white flex items-center cursor-pointer"
-                        onClick={() => progressBarStore.onNextStep(progressBarStore.currentStep)}
+                        onClick={() => watchModelStore.isConfigurationComplete ? progressBarStore.onNextStep(progressBarStore.currentStep) : showToaster(watchModelStore.configurationMessage)}
                     >
                         {progressBarStore.currentStep === 4 ? progressBarMove.offer : progressBarMove.next}
                     </div>

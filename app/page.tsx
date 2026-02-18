@@ -9,10 +9,11 @@ import Footer from "@/app/components/Footer";
 import ProgressBar from "@/app/components/ProgressBar";
 import progressBarStore from "@/app/store/ProgressBarStore";
 import TitleStepsSection from "@/app/features/TitleStepsSection/TitleStepsSection";
-import WatchModelSelection from "@/app/components/WatchModelSelection";
+import WatchModelSelection from "@/app/components/Steps/WatchModelSelection";
 import watchModelStore from "@/app/store/WatchModelStore";
 import { watchModels } from "@/app/lib/watchModel";
-import FrameColors from "@/app/components/FrameColors";
+import FrameColors from "@/app/components/Steps/FrameColors";
+import {Toaster} from "react-hot-toast";
 
 const Home = observer(() => {
 
@@ -52,6 +53,7 @@ const Home = observer(() => {
           <Footer />
       </main>
       <HeaderInfoModal />
+        <Toaster position="bottom-right" reverseOrder={false} />
     </div>
     );
 });

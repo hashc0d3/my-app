@@ -4,6 +4,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import {progressBarFilters} from "@/app/lib/progressBar";
 import Image from "next/image";
 import {useState} from "react";
+import watchModelStore from "@/app/store/WatchModelStore";
 
 interface ProgressBarFiltersProps {
     isSticky: boolean;
@@ -11,6 +12,11 @@ interface ProgressBarFiltersProps {
 
 export function ProgressBarFilters({ isSticky }: ProgressBarFiltersProps) {
     const [isOpen, setIsOpen] = useState(false);
+
+    const selectedColor = watchModelStore.selectedColor?.name;
+    const selectedSize = watchModelStore.selectedSize;
+
+    console.log(selectedColor,selectedSize,'TEST');
 
     return (
         <Dropdown onToggle={(isOpen) => setIsOpen(isOpen)}>
@@ -59,9 +65,8 @@ export function ProgressBarFilters({ isSticky }: ProgressBarFiltersProps) {
                     marginRight: '20px',
                     marginBottom: '4px'
                 }} />
-                <Dropdown.Item href="#/action-1">Action</Dropdown.Item>
-                <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-                <Dropdown.Item href="#/action-3">Something else</Dropdown.Item>
+                <Dropdown.Item href="#/action-1">{selectedColor}</Dropdown.Item>
+                <Dropdown.Item href="#/action-2">{selectedSize}mm</Dropdown.Item>
             </Dropdown.Menu>
         </Dropdown>
     );

@@ -12,7 +12,7 @@ const FrameColors = observer(() => {
     }
 
     return (
-        <div className="container-padding w-fit flex justify-between mt-11 max-[1100px]:hidden">
+        <div className="container-padding w-fit flex justify-between mt-11 mb-11 max-[1100px]:hidden">
             <div className="flex justify-center">
                 <div className="flex justify-between">
                     {activeModel.colors.map((color, idx) => (
@@ -22,9 +22,9 @@ const FrameColors = observer(() => {
                                 flex items-center rounded-[56px] bg-[#f5f5f5]
                                 py-2 pr-[26px] pl-4 border border-transparent
                                 mr-4 last:mr-0 cursor-pointer transition-all duration-200
-                                ${watchModelStore.selectedColor === color.hex ? 'bg-white !border-[#5078DF]' : ''}
+                                ${watchModelStore.selectedColor?.hex === color.hex ? 'bg-white !border-[#5078DF]' : ''}
                             `}
-                            onClick={() => watchModelStore.setSelectedColor(color.hex)}
+                            onClick={() => watchModelStore.setSelectedColor(color)}
                         >
                             <div
                                 className="min-w-[32px] max-w-[32px] min-h-[32px] rounded-full mr-4"

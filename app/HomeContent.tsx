@@ -2,7 +2,7 @@
 
 import { observer } from "mobx-react";
 import { Suspense, useEffect, useRef } from "react";
-import { useSearchParams, useRouter, redirect } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Header } from "@/src/widgets/header";
 import { HeaderInfoModal } from "@/src/features/header-info-modal";
 import { headerStore } from "@/src/entities/header";
@@ -42,9 +42,12 @@ const HomeContentInner = observer(() => {
   const router = useRouter();
   const { currentStep } = progressBarStore;
   const isUrlUpdateRef = useRef(false);
+  const hasInitialSyncRef = useRef(false);
 
-  // Синхронизация URL с текущим шагом при монтировании; валидация — перенаправление на допустимый шаг
+  // Один раз при монтировании: читаем step из URL и выставляем store; если step нет — редирект на ?step=1
   useEffect(() => {
+    if (hasInitialSyncRef.current) return;
+    hasInitialSyncRef.current = true;
     const stepFromUrl = searchParams.get("step");
     if (stepFromUrl) {
       const step = parseInt(stepFromUrl, 10);
@@ -53,16 +56,28 @@ const HomeContentInner = observer(() => {
         progressBarStore.setCurrentStep(step);
         const actualStep = progressBarStore.currentStep;
         if (actualStep !== step) {
-          redirect(`/?step=${actualStep}`);
+          router.replace(`/?step=${actualStep}`, { scroll: false });
         }
       }
     } else {
-      redirect(`/?step=${currentStep}`);
+      router.replace("/?step=1", { scroll: false });
     }
     window.scrollTo(0, 0);
-  }, [currentStep, searchParams]);
+  }, [searchParams]);
 
-  // Обновление URL при изменении шага (только если изменение произошло не из URL)
+  // При смене searchParams (назад/вперёд по истории или после редиректа): синхронизируем URL -> store
+  useEffect(() => {
+    if (!hasInitialSyncRef.current) return;
+    const stepFromUrl = searchParams.get("step");
+    if (!stepFromUrl) return;
+    const step = parseInt(stepFromUrl, 10);
+    if (step >= 1 && step <= 4 && step !== progressBarStore.currentStep) {
+      isUrlUpdateRef.current = true;
+      progressBarStore.setCurrentStep(step);
+    }
+  }, [searchParams]);
+
+  // При смене шага в сторе (кнопка Далее/Назад): обновляем URL
   useEffect(() => {
     if (isUrlUpdateRef.current) {
       isUrlUpdateRef.current = false;
@@ -71,7 +86,7 @@ const HomeContentInner = observer(() => {
     const stepFromUrl = searchParams.get("step");
     const urlStep = stepFromUrl ? parseInt(stepFromUrl, 10) : null;
     if (urlStep !== currentStep) {
-      redirect(`/?step=${currentStep}`);
+      router.replace(`/?step=${currentStep}`, { scroll: false });
     }
   }, [currentStep, searchParams]);
 
@@ -87,7 +102,7 @@ const HomeContentInner = observer(() => {
           progressBarStore.setCurrentStep(step);
           const actualStep = progressBarStore.currentStep;
           if (actualStep !== step) {
-            redirect(`/?step=${actualStep}`);
+            router.replace(`/?step=${actualStep}`, { scroll: false });
           }
         }
       }

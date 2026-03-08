@@ -15,7 +15,7 @@ export const HeaderButtons: HeaderButton[] = [
 // Кнопка перехода на страницу корзины
 export const HeaderButtonCart: HeaderButtonWithIconProps = {
     name: "Корзина",
-    link: "#",
+    link: "/cart",
     icon: "/cart.svg"
 };
 

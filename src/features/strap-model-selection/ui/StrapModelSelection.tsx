@@ -6,6 +6,7 @@ import { Card } from "@/src/shared/ui";
 import { strapModelStore } from "@/src/entities/strap-model";
 import Image from "next/image";
 import {watchModelStore} from "@/entities/watch-model";
+import styles from "./StrapModelSelection.module.css";
 
 const StrapModelSelection = observer(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -23,8 +24,8 @@ const StrapModelSelection = observer(() => {
     }, [models]);
 
     return (
-        <section className="container-padding">
-            <div className="flex items-stretch gap-[10px]">
+        <section className={styles.section}>
+            <div className={styles.cards}>
                 {models.map((model) => {
                     const isActive = strapModelStore.currentStrap === model.id;
 
@@ -34,34 +35,34 @@ const StrapModelSelection = observer(() => {
                                 key={model.id}
                                 isActive={isActive}
                                 onClick={() => strapModelStore.setCurrentStrap(model.id, model.name, model.price)}
-                                className="grid grid-rows-[252px_auto] flex-1 py-[52px]"
+                                className={styles.card}
                             >
                                 <Image
                                     src={model.image}
                                     alt={model.name}
-                                    width={170}
-                                    height={210}
-                                    className="w-[170px] max-h-[210px] object-contain justify-self-center pointer-events-none"
+                                    width={167}
+                                    height={207}
+                                    className={styles.image}
                                 />
 
-                                <div className="flex flex-col items-center px-[60px] mt-[20px] gap-[12px]">
+                                <div className={styles.content}>
                                     {/* Название */}
-                                    <div className="flex flex-col items-center justify-center">
-                                        <p className="text-center text-[22px] font-medium leading-[100%] tracking-[-0.02em] font-[Onest]">
+                                    <div className={styles.titleWrap}>
+                                        <p className={styles.title}>
                                             {model.name}
                                         </p>
                                     </div>
 
                                     {/* Цена */}
-                                    <div className="flex items-center justify-center">
-                                        <p className="text-center text-[18px] font-medium leading-[100%] text-[#5078DF]">
+                                    <div className={styles.priceWrap}>
+                                        <p className={styles.price}>
                                             {model.price} ₽
                                         </p>
                                     </div>
 
                                     {/* Описание */}
-                                    <div className="flex items-center justify-center">
-                                        <p className="text-center text-[14px] font-normal leading-[130%] text-[#676682]">
+                                    <div className={styles.descriptionWrap}>
+                                        <p className={styles.description}>
                                             {model.description}
                                         </p>
                                     </div>

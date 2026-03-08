@@ -1,0 +1,207 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section {
+  border-radius: 20px;
+  border: 0;
+  background: #6766821f;
+  padding: 14px;
+}
+
+.sectionError {
+  outline: 2px solid #e53935;
+  outline-offset: 2px;
+  animation: sectionErrorPulse 1s ease-in-out infinite;
+}
+
+@keyframes sectionErrorPulse {
+  0%, 100% { outline-color: #e53935; }
+  50% { outline-color: #ff6f60; }
+}
+
+.title {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 120%;
+  font-weight: 400;
+  color: #676682;
+}
+
+.titleLabel {
+  font-size: 17px;
+  line-height: 120%;
+  font-weight: 500;
+  color: #111111;
+}
+
+.pillRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.colorPill {
+  border-radius: 100px;
+}
+
+.variantGrid {
+  margin-top: 12px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.variantButton {
+  border-radius: 12px;
+  border: none;
+  background: none;
+  padding: 0;
+  text-align: left;
+  transition: background-color 0.2s ease;
+}
+
+.variantButtonActive {
+  background: none;
+}
+
+.variantButtonContent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  border-radius: 12px;
+  border: 1px solid transparent;
+  transition: border-color 0.2s ease;
+}
+
+.variantButtonActive .variantButtonContent {
+  border-color: #6f89f3;
+}
+
+.variantButtonImageWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 108px;
+  height: 108px;
+  border-radius: 8px;
+  background: #67668226;
+  flex-shrink: 0;
+}
+
+.variantButtonImageInner {
+  position: relative;
+  width: 94px;
+  height: 61px;
+  max-width: 94px;
+  max-height: 61px;
+  overflow: hidden;
+}
+
+.variantButtonImage {
+  object-fit: contain;
+}
+
+.variantButtonText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+}
+
+.variantButtonDisabled {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.variantTitle {
+  font-size: 14px;
+  font-weight: 600;
+  color: #111111;
+  line-height: 130%;
+}
+
+.variantPrice {
+  font-size: 12px;
+  color: #676682;
+}
+
+.adapterGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 26px 44px;
+}
+
+@media (min-width: 640px) {
+  .adapterGrid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.adapterButton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 12px;
+  border: 1px solid #d2d6e4;
+  background: #67668226;
+  padding: 10px;
+  text-align: center;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.adapterButtonActive {
+  border: 1px solid #6f89f3;
+  background: #f1f4ff;
+}
+
+.adapterImageWrap {
+  position: relative;
+  width: 43px;
+  height: 78px;
+  margin-bottom: 26px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.adapterImage {
+  object-fit: contain;
+}
+
+.adapterDotWrap {
+  width: 43px;
+  height: 78px;
+  margin-bottom: 26px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  flex-shrink: 0;
+}
+
+.adapterDot {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 1px solid #cfd3e1;
+  flex-shrink: 0;
+}
+
+.adapterLabel {
+  font-size: 14px;
+  line-height: 130%;
+  font-weight: 500;
+  color: #3a3f55;
+}
+
+@media (max-width: 959px) {
+  .adapterLabel {
+    font-size: 12px;
+  }
+}

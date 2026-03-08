@@ -1,6 +1,8 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 import {StrapModelsProps} from "@/shared/types/StrapModelsTypes";
 
+const STORAGE_KEY = "my-app/strap-model";
+
 class StrapModelStore {
     @observable strapModels: StrapModelsProps[];
     @observable currentStrap: number | null;
@@ -13,7 +15,38 @@ class StrapModelStore {
         this.currentStrap = null;
         this.selectedStrapName = null;
         this.selectedStrapPrice = null;
+        this.hydrateState();
     }
+
+    private saveState = () => {
+        if (typeof window === "undefined") return;
+        window.localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify({
+                currentStrap: this.currentStrap,
+                selectedStrapName: this.selectedStrapName,
+                selectedStrapPrice: this.selectedStrapPrice
+            })
+        );
+    };
+
+    private hydrateState = () => {
+        if (typeof window === "undefined") return;
+        try {
+            const raw = window.localStorage.getItem(STORAGE_KEY);
+            if (!raw) return;
+            const parsed = JSON.parse(raw) as {
+                currentStrap?: number | null;
+                selectedStrapName?: string | null;
+                selectedStrapPrice?: number | null;
+            };
+            this.currentStrap = parsed.currentStrap ?? null;
+            this.selectedStrapName = parsed.selectedStrapName ?? null;
+            this.selectedStrapPrice = parsed.selectedStrapPrice ?? null;
+        } catch {
+            // ignore broken localStorage value
+        }
+    };
 
     @computed get isConfigurationComplete(): boolean {
         return (
@@ -32,11 +65,19 @@ class StrapModelStore {
         this.currentStrap = currentStrap;
         this.selectedStrapName = strapName;
         this.selectedStrapPrice = strapPrice;
+        this.saveState();
     }
 
     @action setStrapModels = (models: StrapModelsProps[]) => {
         this.strapModels = models;
     }
+
+    @action resetSelection = () => {
+        this.currentStrap = null;
+        this.selectedStrapName = null;
+        this.selectedStrapPrice = null;
+        this.saveState();
+    };
 }
 
 export default new StrapModelStore();

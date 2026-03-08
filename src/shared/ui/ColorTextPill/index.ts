@@ -1,0 +1,1 @@
+export { ColorTextPill } from "./ColorTextPill";

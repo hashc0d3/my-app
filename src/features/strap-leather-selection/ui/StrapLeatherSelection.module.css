@@ -1,0 +1,71 @@
+.root {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.section {
+  border-radius: 20px;
+  border: 0;
+  background: #6766821f;
+  padding: 14px;
+}
+
+.sectionError {
+  outline: 2px solid #e53935;
+  outline-offset: 2px;
+  animation: sectionErrorPulse 1s ease-in-out infinite;
+}
+
+@keyframes sectionErrorPulse {
+  0%, 100% { outline-color: #e53935; }
+  50% { outline-color: #ff6f60; }
+}
+
+.title {
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 120%;
+  font-weight: 400;
+  color: #676682;
+}
+
+.titleLabel {
+  font-size: 17px;
+  line-height: 120%;
+  font-weight: 500;
+  color: #111111;
+}
+
+.pillRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pillButton {
+  border-radius: 100px;
+  border: 1px solid #d2d6e4;
+  background: #6766821f;
+  padding: 10px 20px;
+  font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0;
+  text-align: center;
+  font-variant-numeric: lining-nums proportional-nums;
+  color: #676682;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.pillButtonActive {
+  border-color: #6f89f3;
+  background: #f1f4ff;
+  color: #3a3f55;
+}
+
+.colorPill {
+  border-radius: 100px;
+}

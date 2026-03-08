@@ -1,13 +1,18 @@
 import { ButtonHTMLAttributes, ReactNode } from 'react';
 import classNames from 'classnames';
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+/**
+ * Пропсы кнопки (shared/ui).
+ * Расширяет нативный button; вариант, размер и fullWidth — опциональны.
+ */
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'secondary' | 'outline';
   size?: 'sm' | 'md' | 'lg';
   children: ReactNode;
   fullWidth?: boolean;
 }
 
+/** Переиспользуемая кнопка: варианты, размеры, доступность. Один источник правды для стилей кнопок. */
 export const Button = ({
   variant = 'primary',
   size = 'md',

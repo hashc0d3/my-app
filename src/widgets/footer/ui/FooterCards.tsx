@@ -1,53 +1,54 @@
 "use client"
 
-import React from 'react';
-import {footerCards} from "@/src/shared/lib/footer";
-import {FooterCardBannerProps, FooterCardItemProps, FooterTypes} from "@/src/shared/types/FooterTypes";
+import React from "react";
+import Image from "next/image";
+import { footerCards } from "@/src/shared/lib/footer";
+import type { FooterCardBannerProps, FooterCardItemProps, FooterTypes } from "@/src/shared/types/FooterTypes";
+import styles from "./FooterCards.module.css";
 
 const FooterCards = () => {
     return (
-        <section key="footerCards" className="flex gap-3">
+        <section key="footerCards" className={styles.section}>
             {/*
                 Формируем блок карточек в footer
             */}
-            {footerCards.map((card: FooterTypes, index: number) =>
+            {footerCards.map((card: FooterTypes) =>
                 <div
-                    key={index}
-                    className="bg-[#E1E9FE] rounded-2xl pl-9 pr-9 pt-8 pb-8 flex flex-col gap-5"
+                    key={card.id}
+                    className={styles.card}
                 >
                     {/*
                         Наименование карточки
                     */}
-                    <p className="mb-4 text-[22px] leading-[100%] tracking-[-0.02em] font-medium">
+                    <p className={styles.cardTitle}>
                         {card.title}
                     </p>
                     {/*
                         Баннеры для карточки
                     */}
-                    <div className="grow flex flex-col gap-5">
+                    <div className={styles.items}>
                         {card.items.map((item: FooterCardItemProps, itemIndex: number) => {
                             return (
                                 /*
                                 * Для каждого элемента карточки отображаем баннеры и описание.
                                 * Баннеры отображаются в виде иконок, а описание - в виде списка с маркерами.
                                 * */
-                                <div key={item.description + itemIndex} className="flex flex-col gap-2">
-                                    <div className="flex gap-2 flex-wrap items-center">
+                                <div key={`${item.description}-${itemIndex}`} className={styles.itemBlock}>
+                                    <div className={styles.banners}>
                                         {item.banners.map((banner: FooterCardBannerProps, bannerIndex: number) => (
                                             <React.Fragment key={banner.icon}>
                                                 <a href={banner.link}>
-                                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                                    <img src={banner.icon} alt={banner.icon} className="pr-4"/>
+                                                    <Image src={banner.icon} alt="" width={32} height={32} className={styles.bannerIcon} />
                                                 </a>
                                                 {/* Вертикальная линия между иконками */}
                                                 {bannerIndex < item.banners.length - 1 && (
-                                                    <div className="w-px h-6 bg-[#6766824D] mr-4"></div>
+                                                    <div className={styles.separator}></div>
                                                 )}
                                             </React.Fragment>
                                         ))}
                                     </div>
-                                    <ul>
-                                        <li className="list-disc marker:text-[#676682] text-[14px] leading-[130%] font-normal text-[#67668299] whitespace-pre-line">
+                                    <ul className={styles.descriptionList}>
+                                        <li className={styles.descriptionItem}>
                                             {item.description}
                                         </li>
                                     </ul>
@@ -58,7 +59,7 @@ const FooterCards = () => {
                     {/*
                         Описание для карточки
                     */}
-                    <p className="mt-4 text-[16px] leading-[130%] font-normal text-[#676682]">
+                    <p className={styles.cardDescription}>
                         {card.description}
                     </p>
                 </div>

@@ -1,0 +1,266 @@
+/* Стили виджета Header. Адаптив: 1440, 1200, 959, 640px — отступы и шрифт. */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: #5078DF;
+  color: #FFFFFF;
+  font-size: 14px;
+  line-height: 130%;
+  font-weight: 400;
+  padding-left: 250px;
+  padding-right: 250px;
+}
+
+@media (max-width: 1440px) {
+  .header {
+    padding-left: 68px;
+    padding-right: 68px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .header {
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+}
+
+@media (max-width: 959px) {
+  .header {
+    padding-left: 40px;
+    padding-right: 40px;
+    font-size: 12px !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .header {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 56;
+}
+
+@media (max-width: 639px) {
+  .nav {
+    padding-top: 7px;
+    padding-bottom: 7px;
+  }
+}
+
+.leftBlock {
+  display: flex;
+  gap: 35px;
+  align-items: center;
+}
+
+@media (max-width: 959px) {
+  .leftBlock {
+    display: none;
+  }
+}
+
+.leftList {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.leftItem {
+  list-style: disc;
+}
+
+.leftItem::marker {
+  color: #FFFFFF;
+}
+
+.logoWrap {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@media (max-width: 639px) {
+  .logoWrap {
+    position: static;
+    transform: none;
+  }
+}
+
+@media (max-width: 639px) {
+  .logo {
+    width: 108px;
+    height: 23px;
+  }
+}
+
+.logoSpacer {
+  visibility: hidden;
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+@media (max-width: 639px) {
+  .logoSpacer {
+    display: none;
+  }
+}
+
+.rightList {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.cartItem {
+  margin-right: 0;
+}
+
+@media (max-width: 959px) {
+  .rightList {
+    gap: 0;
+  }
+
+  .cartItem {
+    margin-right: 7px;
+  }
+}
+
+.contactItem {
+  margin-right: 0;
+}
+
+@media (max-width: 959px) {
+  .contactItem {
+    margin-right: 24px;
+  }
+}
+
+.actionLink {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.actionLink:hover {
+  color: inherit;
+}
+
+.burgerItem {
+  display: none;
+}
+
+@media (max-width: 959px) {
+  .burgerItem {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.burgerButton {
+  width: 40px;
+  height: 18px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.burgerLine {
+  position: absolute;
+  display: block;
+  width: 30px;
+  height: 1.5px;
+  background: #FFFFFF;
+  transition: transform 0.2s ease;
+}
+
+.burgerLineTopClosed {
+  transform: translateY(-4px);
+}
+
+.burgerLineBottomClosed {
+  transform: translateY(4px);
+}
+
+.burgerLineTopOpen {
+  transform: rotate(18deg);
+}
+
+.burgerLineBottomOpen {
+  transform: rotate(-18deg);
+}
+
+.mobileMenu {
+  display: none;
+}
+
+@media (max-width: 959px) {
+  .mobileMenu {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    background: #5078DF;
+    padding: 74px 20px 40px;
+    overflow-y: auto;
+    transition: opacity 220ms ease, transform 220ms ease, visibility 220ms ease;
+    transform: translateY(-10px);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+  }
+}
+
+.mobileMenuOpen {
+  transform: translateY(0);
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+.mobileMenuClosed {
+  transform: translateY(-10px);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.mobileMainLink {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.mobileList {
+  margin: 0;
+  padding: 0 0 0 20px;
+}
+
+.mobileListItem {
+  list-style: disc;
+  margin-bottom: 8px;
+}
+
+.mobileListItem::marker {
+  color: #FFFFFF;
+}

@@ -2,6 +2,7 @@
 
 import { observer } from "mobx-react";
 import { watchModelStore } from "@/src/entities/watch-model";
+import styles from "./FrameColors.module.css";
 
 const FrameColors = observer(() => {
     const activeModel = watchModelStore.watchModels.find(m => m.id === watchModelStore.currentCard);
@@ -11,24 +12,32 @@ const FrameColors = observer(() => {
     }
 
     return (
-        <div className="container-padding w-fit flex justify-between mt-11 mb-11">
-            <div className="flex justify-center">
-                <div className="flex justify-between">
-                    {activeModel.colors.map((color, idx) => (
+        <div className={styles.section}>
+            <div className={styles.inner}>
+                <div className={styles.list}>
+                    {activeModel.colors.map((color) => (
                         <div
-                            key={idx}
-                            className={`flex items-center rounded-[56px] bg-[#f5f5f5] py-2 pr-[26px] pl-4 border mr-4 last:mr-0 cursor-pointer transition-all ${
+                            key={color.hex}
+                            role="button"
+                            tabIndex={0}
+                            className={`${styles.item} ${
                                 watchModelStore.selectedColor?.hex === color.hex
-                                    ? 'bg-white border-[#5078DF]'
-                                    : 'border-transparent'
+                                    ? styles.itemActive
+                                    : ''
                             }`}
                             onClick={() => watchModelStore.setSelectedColor(color)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    watchModelStore.setSelectedColor(color);
+                                }
+                            }}
                         >
                             <div
-                                className="min-w-[32px] max-w-[32px] min-h-[32px] rounded-full mr-4"
+                                className={styles.dot}
                                 style={{ background: color.hex }}
                             />
-                            <span className="text-base leading-5">{color.name}</span>
+                            <span className={styles.name}>{color.name}</span>
                         </div>
                     ))}
                 </div>

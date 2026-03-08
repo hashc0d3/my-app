@@ -9,10 +9,15 @@ import {ProgressBarProps} from "@/src/shared/types/ProgressBarTypes";
 import ProgressBarFilters from "./ProgressBarDropdown";
 import { watchModelStore } from "@/src/entities/watch-model";
 import { showToaster } from "@/src/shared/lib/toaster";
-import {strapModelStore} from "@/entities/strap-model";
+import { strapModelStore } from "@/entities/strap-model";
+import { strapConfiguratorStore } from "@/src/entities/strap-configurator";
+import styles from "./ProgressBar.module.css";
+
+const HIGHLIGHT_DURATION_MS = 2500;
 
 const ProgressBar = observer(() => {
     const [isSticky, setIsSticky] = React.useState(false);
+    const step3HighlightTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
     // Следование при скроле
     React.useEffect(() => {
@@ -20,8 +25,12 @@ const ProgressBar = observer(() => {
             setIsSticky(window.scrollY > 49);
         };
 
-        window.addEventListener('scroll', handleScroll);
+        window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
+    React.useEffect(() => () => {
+        if (step3HighlightTimeoutRef.current) clearTimeout(step3HighlightTimeoutRef.current);
     }, []);
 
     // Валидация перехода к следующему шагу
@@ -45,6 +54,31 @@ const ProgressBar = observer(() => {
                 break;
             }
 
+            case 3: {
+                if (strapConfiguratorStore.isConfigurationComplete) {
+                    progressBarStore.onNextStep(progressBarStore.currentStep);
+                } else {
+                    showToaster(strapConfiguratorStore.configurationMessage);
+                    const missingKey = strapConfiguratorStore.missingFilterKey;
+                    if (missingKey) {
+                        strapConfiguratorStore.setHighlightFilterKey(missingKey);
+                        if (step3HighlightTimeoutRef.current) clearTimeout(step3HighlightTimeoutRef.current);
+                        step3HighlightTimeoutRef.current = setTimeout(() => {
+                            strapConfiguratorStore.setHighlightFilterKey(null);
+                            step3HighlightTimeoutRef.current = null;
+                        }, HIGHLIGHT_DURATION_MS);
+                    }
+                }
+                break;
+            }
+
+            case 4: {
+                if (typeof window !== "undefined") {
+                    window.dispatchEvent(new CustomEvent("checkout:add-to-cart"));
+                }
+                break;
+            }
+
             default:
                 break;
         }
@@ -54,59 +88,99 @@ const ProgressBar = observer(() => {
     * Компонент progress bar с шагами и кнопками Назад/Вперед
     * */
     return (
-        <div className="sticky top-[49px] z-40 pt-[10px] container-padding pb-9 flex justify-between items-center">
+        <div className={styles.root}>
 
-            <div className="flex items-center gap-2">
+            <div className={styles.leftBlock}>
                 {/*
                     Основной ProgressBar
                 */}
-                <div className={`text-black rounded-[100px] inline-flex gap-2 p-1 transition-colors ${isSticky ? 'bg-[#D4E0FF99] backdrop-blur-md' : 'bg-[#D4E0FF]'}`}>
-                {progressBar.map((step: ProgressBarProps, index) => (
-                    <div
-                        key={index}
-                        className={`flex items-center rounded-[100px] gap-2 py-2 px-3 cursor-pointer transition-colors ${
-                            progressBarStore.currentStep === step.step
-                                ? "bg-[#7A9CF566]"
-                                : ""
-                        }`}
-                        onClick={() => progressBarStore.onSwitchStep(step.step)}
-                    >
-                        {step.icon ? (
-                            <div className="flex items-center">
-                                <Image
-                                    src={step.icon}
-                                    alt={step.name}
-                                    width={20}
-                                    height={22}
-                                    className="object-contain"
-                                />
-                            </div>
-                        ) : null}
-                        <span className="leading-none">{step.name}</span>
-                    </div>
-                ))}
-            </div>
+                <div className={`${styles.stepControls} ${isSticky ? styles.controlsSticky : styles.controlsNormal}`}>
+                    {progressBar.map((step: ProgressBarProps) => (
+                        <div
+                            key={step.step}
+                            role="button"
+                            tabIndex={0}
+                            className={`${styles.stepItem} ${
+                                progressBarStore.currentStep === step.step
+                                    ? styles.stepItemActive
+                                    : ""
+                            }`}
+                            onClick={() => progressBarStore.onSwitchStep(step.step)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    progressBarStore.onSwitchStep(step.step);
+                                }
+                            }}
+                        >
+                            {step.icon ? (
+                                <div className={styles.stepIconWrap}>
+                                    <Image
+                                        src={step.icon}
+                                        alt={step.name}
+                                        width={20}
+                                        height={22}
+                                        className={styles.stepIcon}
+                                    />
+                                </div>
+                            ) : null}
+                            <span className={styles.stepName}>{step.name}</span>
+                        </div>
+                    ))}
+                </div>
                 {/*
                     Фильтры рядом с ProgressBar только со второго шага
                 */}
-                {progressBarStore.currentStep >= 2 ? <ProgressBarFilters isSticky={isSticky} /> : ""}
+                {progressBarStore.currentStep >= 2 ? (
+                    <div className={styles.desktopFilters}>
+                        <ProgressBarFilters isSticky={isSticky} />
+                    </div>
+                ) : ""}
             </div>
             {/*
                 Блок кнопок перехода Назад/Вперед
             */}
-            <div>
-                <div className={`rounded-[100px] inline-flex gap-2 p-1 transition-colors ${isSticky ? 'bg-[#D4E0FF99] backdrop-blur-md' : 'bg-[#D4E0FF]'}`}>
+            <div className={styles.actionsContainer}>
+                <div className={`${styles.actionsWrap} ${isSticky ? styles.controlsSticky : styles.controlsNormal}`}>
+                    {progressBarStore.currentStep >= 2 ? (
+                        <div className={styles.mobileFilters}>
+                            <ProgressBarFilters isSticky={isSticky} isCompact />
+                        </div>
+                    ) : ""}
                     <div
-                        className="py-2 px-3 text-[#5078DF] flex items-center cursor-pointer"
+                        role="button"
+                        tabIndex={0}
+                        className={styles.actionBack}
                         onClick={() => progressBarStore.onPrevStep(progressBarStore.currentStep)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                progressBarStore.onPrevStep(progressBarStore.currentStep);
+                            }
+                        }}
                     >
                         {progressBarMove.back}
                     </div>
                     <div
-                        className="py-2 px-3 bg-[#5078DF] rounded-[100px] text-white flex items-center cursor-pointer"
+                        role="button"
+                        tabIndex={0}
+                        className={styles.actionNext}
                         onClick={() => validate()}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault();
+                                validate();
+                            }
+                        }}
                     >
-                        {progressBarStore.currentStep === 4 ? progressBarMove.offer : progressBarMove.next}
+                        {progressBarStore.currentStep === 4 ? (
+                            <>
+                                <span className={styles.actionNextDesktop}>{progressBarMove.offer}</span>
+                                <span className={styles.actionNextBottom}>{progressBarMove.offerShort}</span>
+                            </>
+                        ) : (
+                            progressBarMove.next
+                        )}
                     </div>
                 </div>
             </div>

@@ -1,0 +1,269 @@
+.root {
+  position: sticky;
+  top: 49px;
+  z-index: 40;
+  padding-top: 10px;
+  padding-bottom: 36px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-left: 250px;
+  padding-right: 250px;
+}
+
+@media (max-width: 1440px) {
+  .root {
+    padding-left: 68px;
+    padding-right: 68px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .root {
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+}
+
+@media (max-width: 960px) {
+  .root {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .root {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+.leftBlock {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.desktopFilters {
+  display: block;
+}
+
+.mobileFilters {
+  display: none;
+}
+
+.stepControls {
+  color: #000000;
+  border-radius: 100px;
+  display: inline-flex;
+  gap: 10px;
+  padding: 5px;
+  transition: background-color 0.2s ease;
+}
+
+.controlsNormal {
+  background: #D4E0FF99;
+}
+
+.controlsSticky {
+  background: #D4E0FF99;
+  backdrop-filter: blur(12px);
+}
+
+.stepItem {
+  display: flex;
+  align-items: center;
+  border-radius: 100px;
+  gap: 10px;
+  padding: 5px 15px 5px 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0;
+  text-align: center;
+  font-variant-numeric: lining-nums proportional-nums;
+}
+
+.stepItemActive {
+  background: #7A9CF566;
+}
+
+.stepIconWrap {
+  display: flex;
+  align-items: center;
+  padding-left: 5px;
+}
+
+.stepIcon {
+  object-fit: contain;
+}
+
+.stepName {
+  line-height: 130%;
+}
+
+.step4DesignButton {
+  width: 20px;
+  min-width: 20px;
+  height: 22px;
+  border-radius: 0;
+  border: 0;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  cursor: pointer;
+  padding: 0 15px 0 15px;
+}
+
+.step4IconWrap {
+  width: 20px;
+  min-width: 20px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
+.step4DesignIcon {
+  transform: scale(1.45);
+  transform-origin: center;
+}
+
+@media (max-width: 1699px) {
+  .stepItem:not(.stepItemActive) .stepName {
+    display: none;
+  }
+
+  .stepItem:not(.stepItemActive) {
+    padding: 5px;
+    gap: 0;
+    justify-content: center;
+  }
+
+  .stepItem:not(.stepItemActive) .stepIconWrap {
+    padding-left: 0;
+    justify-content: center;
+  }
+}
+
+.actionsWrap {
+  border-radius: 100px;
+  display: inline-flex;
+  gap: 8px;
+  padding: 4px;
+  transition: background-color 0.2s ease;
+}
+
+.actionsContainer {
+  display: flex;
+}
+
+.actionBack {
+  padding: 8px 12px;
+  color: #5078DF;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0;
+  text-align: center;
+  font-variant-numeric: lining-nums proportional-nums;
+}
+
+.actionNext {
+  padding: 8px 12px;
+  background: #5078DF;
+  border-radius: 100px;
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 14px;
+  line-height: 130%;
+  letter-spacing: 0;
+  text-align: center;
+  font-variant-numeric: lining-nums proportional-nums;
+}
+
+.actionNextDesktop {
+  display: inline;
+}
+
+.actionNextBottom {
+  display: none;
+}
+
+@media (max-width: 779px) {
+  .actionNextDesktop {
+    display: none;
+  }
+
+  .actionNextBottom {
+    display: inline;
+  }
+
+  .desktopFilters {
+    display: none;
+  }
+
+  .mobileFilters {
+    display: block;
+  }
+
+  .root {
+    position: sticky;
+    top: 49px;
+    z-index: 40;
+    justify-content: center;
+    padding-top: 10px;
+    padding-bottom: 20px;
+  }
+
+  .leftBlock {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .actionsContainer {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    z-index: 60;
+    justify-content: center;
+  }
+
+  .actionsWrap {
+    gap: 10px;
+    padding: 5px;
+  }
+}
+
+/* Текст блока 12px на узких экранах (правило в конце файла, чтобы перекрыть базовый 14px) */
+@media (max-width: 640px) {
+  .root {
+    font-size: 12px;
+  }
+
+  .stepItem,
+  .stepName,
+  .actionBack,
+  .actionNext {
+    font-size: 12px !important;
+  }
+}

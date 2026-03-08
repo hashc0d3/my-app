@@ -16,5 +16,6 @@ export interface ProgressBarFiltersProps {
 export interface ProgressBarMoveProps {
     next: string,
     back: string,
-    offer: string
+    offer: string,
+    offerShort: string
 }

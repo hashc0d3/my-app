@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
-import 'bootstrap/dist/css/bootstrap.min.css';
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./globals.css";
+import { PublicConfigProvider } from "./PublicConfigProvider";
+import { ToasterWrapper } from "./ToasterWrapper";
 
 const onest = localFont({
   src: "./fonts/Onest/Onest-VariableFont_wght.ttf",
@@ -21,10 +23,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${onest.variable} antialiased`}
-      >
-        {children}
+      <body className={`${onest.variable} antialiased`}>
+        <PublicConfigProvider>
+          {children}
+          <ToasterWrapper />
+        </PublicConfigProvider>
       </body>
     </html>
   );

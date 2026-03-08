@@ -12,9 +12,10 @@ export interface FooterCardItemProps {
 
 // Тип для карточки в footer
 export interface FooterTypes {
-    title: string ,
-    items: FooterCardItemProps[],
-    description: string
+    id: string;
+    title: string;
+    items: FooterCardItemProps[];
+    description: string;
 }
 
 // Тип для нижних секций под Slava Larionov

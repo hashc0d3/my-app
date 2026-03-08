@@ -1,0 +1,111 @@
+.page {
+  min-height: 100vh;
+  background: #f9fafb;
+  padding: 24px 16px;
+}
+
+.container {
+  width: min(1280px, calc(100vw - 32px));
+  margin: 0 auto;
+}
+
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 10px;
+  border-radius: 14px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.06);
+}
+
+.tabButton {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  border-radius: 9999px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.tabButton:hover {
+  border-color: #9ca3af;
+  background: #f3f4f6;
+}
+
+.tabButtonActive {
+  background: #3b82f6;
+  color: #ffffff;
+  border-color: #3b82f6;
+}
+
+.saveButton {
+  border: 0;
+  background: #10b981;
+  color: #ffffff;
+  border-radius: 9999px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.saveButton:hover {
+  background: #059669;
+}
+
+.status {
+  margin-bottom: 16px;
+  border: 1px solid #d1d5db;
+  border-left: 4px solid #3b82f6;
+  background: #ffffff;
+  color: #374151;
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.page :global(.card) {
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.06);
+}
+
+.page :global(.border) {
+  border-color: #e5e7eb !important;
+  border-radius: 12px !important;
+  background: #ffffff;
+}
+
+.page :global(.form-control),
+.page :global(.form-select) {
+  border-radius: 10px;
+  border-color: #d1d5db;
+  background: #ffffff;
+  color: #111827;
+}
+
+.page :global(.form-control:focus),
+.page :global(.form-select:focus) {
+  border-color: #93c5fd;
+  box-shadow: 0 0 0 0.2rem rgba(59, 130, 246, 0.15);
+}
+
+.page :global(.btn) {
+  border-radius: 10px;
+  font-weight: 500;
+}
+
+.page :global(summary) {
+  cursor: pointer;
+  color: #111827;
+}
+
+.page :global(h5),
+.page :global(h6),
+.page :global(strong) {
+  color: #111827;
+}

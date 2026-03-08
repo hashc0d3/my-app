@@ -3,6 +3,7 @@ import {FooterTypes, FooterInfoProps} from "@/src/shared/types/FooterTypes";
 // Блок карточек в footer
 export const footerCards: FooterTypes[] = [
     {
+        id: "payment-1",
         title: "Оплата на сайте",
         items: [
             {
@@ -25,6 +26,7 @@ export const footerCards: FooterTypes[] = [
         description: "После оплаты вам придет чек\nна электронную почту"
     },
     {
+        id: "payment-2",
         title: "Оплата на сайте",
         items: [{
             banners: [
@@ -37,6 +39,7 @@ export const footerCards: FooterTypes[] = [
         description: "После оплаты вам придет чек\nна электронную почту"
     },
     {
+        id: "payment-3",
         title: "Оплата на сайте",
         items: [{
             banners: [

@@ -1,0 +1,120 @@
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: #FFFFFF;
+  color: #000000;
+  padding-bottom: 32px;
+  padding-left: 250px;
+  padding-right: 250px;
+}
+
+@media (max-width: 1440px) {
+  .footer {
+    padding-left: 68px;
+    padding-right: 68px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .footer {
+    padding-left: 50px;
+    padding-right: 50px;
+  }
+}
+
+@media (max-width: 960px) {
+  .footer {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+@media (max-width: 640px) {
+  .footer {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  container-type: inline-size;
+  overflow: hidden;
+}
+
+.title {
+  width: 100%;
+  margin: 0;
+  font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  text-align: center;
+  color: #2F2C33;
+  font-size: clamp(42px, 16cqw, 232px);
+  line-height: 90%;
+  letter-spacing: -0.05em;
+  font-weight: 400;
+  font-style: normal;
+  font-variant-numeric: lining-nums proportional-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: clip;
+  transform: none;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.infoList {
+  display: flex;
+  gap: 20px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.infoLink {
+  font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  font-size: clamp(11px, 0.78vw, 14px);
+  line-height: 130%;
+  letter-spacing: 0;
+  font-weight: 400;
+  font-style: normal;
+  font-variant-numeric: lining-nums proportional-nums;
+  color: #67668299;
+  white-space: nowrap;
+}
+
+@media (max-width: 1200px) {
+  .infoRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .infoList {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    row-gap: 8px;
+  }
+}
+
+@media (max-width: 640px) {
+  .infoLink {
+    font-size: 12px;
+  }
+
+  .infoList {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+}

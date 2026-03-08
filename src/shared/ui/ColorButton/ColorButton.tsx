@@ -1,6 +1,7 @@
 import classNames from 'classnames';
 
-interface ColorButtonProps {
+/** Кнопка-светофор: отображает цвет (например выбор цвета корпуса/ремешка). */
+export interface ColorButtonProps {
   color: string;
   isActive?: boolean;
   onClick?: () => void;

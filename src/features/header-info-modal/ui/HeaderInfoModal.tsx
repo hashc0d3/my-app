@@ -6,7 +6,7 @@ import { headerStore } from "@/src/entities/header";
 import {HeaderModalContacts} from "@/src/shared/lib/header";
 import Link from "next/link";
 import Image from "next/image";
-
+import styles from "./HeaderInfoModal.module.css";
 
 /*
 * Модальное окно для кнопки "Контакты" в header
@@ -22,11 +22,8 @@ const HeaderInfoModal = observer(() => {
                 size="xl"
                 dialogClassName="modal-1080"
             >
-                <Modal.Header className="justify-center relative border-0">
-                    <Modal.Title
-                        className="w-full text-center pb-7 pt-7 leading-[100%] tracking-[-0.02em] font-medium"
-                        style={{ fontSize: '32px', color: '#2F2C33' }}
-                    >
+                <Modal.Header className={`justify-center relative border-0 container-padding ${styles.modalHeader}`}>
+                    <Modal.Title className={`w-full text-center leading-[100%] tracking-[-0.02em] font-medium ${styles.modalTitle}`}>
                         {HeaderModalContacts.name}
                     </Modal.Title>
                     <Image
@@ -34,28 +31,22 @@ const HeaderInfoModal = observer(() => {
                         height={40}
                         src="/closeIcon.svg"
                         alt="close"
-                        className="absolute right-6 top-6 cursor-pointer"
+                        className={styles.modalClose}
                         onClick={() => headerStore.toggleModal()}
                     />
                 </Modal.Header>
-                <Modal.Body className="flex flex-col gap-7 justify-center items-center border-t border-[#67668233] ml-12 mr-12">
-                    <div className="flex flex-col gap-3 items-center text-[#5078DF] pt-7">
-                        <Link
-                            href={HeaderModalContacts.phoneNumber.link}
-                            className="text-[22px] leading-[100%] tracking-[-0.02em] font-medium text-center"
-                        >
+                <Modal.Body className="flex flex-col justify-center items-center border-t border-[#67668233] container-padding">
+                    <div className={`flex flex-col gap-3 items-center text-[#5078DF] ${styles.contactLinksWrap}`}>
+                        <Link href={HeaderModalContacts.phoneNumber.link} className={styles.contactLink}>
                             {HeaderModalContacts.phoneNumber.name}
                         </Link>
-                        <Link
-                            href={HeaderModalContacts.email.link}
-                            className="text-[22px] leading-[100%] tracking-[-0.02em] font-medium text-center"
-                        >
+                        <Link href={HeaderModalContacts.email.link} className={styles.contactLink}>
                             {HeaderModalContacts.email.name}
                         </Link>
                     </div>
-                    <div className="flex justify-center gap-2 pb-12">
+                    <div className={styles.buttonsRow}>
                         <Link href={HeaderModalContacts.whatsapp.link}>
-                            <Button className="d-flex align-items-center gap-2 rounded-5 border-0" style={{ color: '#5078DF', background: '#E5E7F0'}}>
+                            <Button className={`d-flex align-items-center justify-content-center gap-2 rounded-5 border-0 ${styles.modalButton}`} style={{ color: '#5078DF', background: '#E5E7F0'}}>
                                 <Image
                                     src={HeaderModalContacts.whatsapp.icon}
                                     alt="WhatsApp"
@@ -66,7 +57,7 @@ const HeaderInfoModal = observer(() => {
                             </Button>
                         </Link>
                         <Link href={HeaderModalContacts.telegram.link}>
-                            <Button className="d-flex align-items-center gap-2 rounded-5 bg-[#5078DF] text-white border-0">
+                            <Button className={`d-flex align-items-center justify-content-center gap-2 rounded-5 bg-[#5078DF] text-white border-0 ${styles.modalButton}`}>
                                 <Image
                                     src={HeaderModalContacts.telegram.icon}
                                     alt="WhatsApp"

@@ -4,13 +4,14 @@ import { observer } from "mobx-react";
 import { Card } from "@/src/shared/ui";
 import { watchModelStore } from "@/src/entities/watch-model";
 import Image from "next/image";
+import styles from "./WatchModelSelection.module.css";
 
 const WatchModelSelection = observer(() => {
     const models = watchModelStore.watchModels || [];
 
     return (
-        <section className="container-padding">
-            <div className="flex items-stretch gap-[10px]">
+        <section className={styles.section}>
+            <div className={styles.cards}>
                 {models.map((model) => {
                     const isActive = watchModelStore.currentCard === model.id;
 
@@ -19,31 +20,33 @@ const WatchModelSelection = observer(() => {
                             key={model.id}
                             isActive={isActive}
                             onClick={() => watchModelStore.setCurrentCard(model.id, model.model)}
-                            className="grid grid-rows-[252px_130px] flex-1 py-[52px]"
+                            className={styles.card}
                         >
                             <Image
                                 src={model.image}
                                 alt={model.name}
                                 width={140}
                                 height={252}
-                                className="w-[140px] max-h-[252px] object-contain justify-self-center pointer-events-none"
+                                className={styles.image}
                             />
 
-                            <div className="flex flex-col items-center px-[60px] mt-[20px]">
-                                <div className="flex flex-col items-center justify-center h-10">
-                                    <p className="text-center text-[22px] font-medium leading-[100%] tracking-[-0.02em] font-[Onest]">
-                                        {model.name}
-                                    </p>
+                            <div className={styles.content}>
+                                <div className={styles.titleWrap}>
+                                    <p className={styles.title}>{model.name}</p>
+                                    {model.model ? (
+                                        <p className={styles.series}>{model.model}</p>
+                                    ) : null}
                                 </div>
 
-                                <div className="flex gap-2.5 mt-[20px]">
-                                    {model.sizes.map((size, id) => (
-                                        <div
-                                            key={id}
-                                            className={`flex items-center justify-center flex-1 max-w-[85px] min-h-[44px] px-5 py-3 rounded-full border text-base cursor-pointer transition-all ${
+                                <div className={styles.sizes}>
+                                    {model.sizes.map((size) => (
+                                        <button
+                                            type="button"
+                                            key={size}
+                                            className={`${styles.sizeButton} ${
                                                 watchModelStore.selectedSize === size
-                                                    ? 'bg-white border-[#5078DF]'
-                                                    : 'bg-[#e9e9e9] border-transparent hover:border-[#b3b3b3]'
+                                                    ? styles.sizeActive
+                                                    : styles.sizeInactive
                                             }`}
                                             onClick={(e) => {
                                                 e.stopPropagation();
@@ -51,9 +54,31 @@ const WatchModelSelection = observer(() => {
                                             }}
                                         >
                                             {size}mm
-                                        </div>
+                                        </button>
                                     ))}
                                 </div>
+
+                                {isActive && model.colors?.length ? (
+                                    <div className={styles.cardColors}>
+                                        {model.colors.map((color, colorIdx) => (
+                                            <button
+                                                key={`${model.id}-${colorIdx}`}
+                                                type="button"
+                                                className={`${styles.colorChip} ${
+                                                    watchModelStore.selectedColor?.hex === color.hex ? styles.colorChipActive : ""
+                                                }`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    watchModelStore.setSelectedColor(color);
+                                                }}
+                                                aria-label={color.name}
+                                                title={color.name}
+                                            >
+                                                <span className={styles.colorDot} style={{ background: color.hex }} />
+                                            </button>
+                                        ))}
+                                    </div>
+                                ) : null}
                             </div>
                         </Card>
                     );

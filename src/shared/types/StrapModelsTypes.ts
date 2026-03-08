@@ -1,3 +1,5 @@
+import type { StrapConfig } from "@/src/shared/types/StrapConfigTypes";
+
 export interface StrapModelsProps {
     id: number;
     image: string;
@@ -5,4 +7,5 @@ export interface StrapModelsProps {
     price: number;
     description: string;
     available: number[];
+    step3Config?: StrapConfig;
 }

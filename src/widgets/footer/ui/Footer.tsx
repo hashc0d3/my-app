@@ -2,30 +2,29 @@
 
 import FooterCards from "./FooterCards";
 import {footerInfo} from "@/src/shared/lib/footer";
+import styles from "./Footer.module.css";
 
 const Footer = () => {
     return (
-        <footer key="footer" className="flex flex-col gap-5 bg-[#ffffff] text-black container-padding pb-8">
+        <footer key="footer" className={styles.footer}>
             <FooterCards />
-            <section key="footerInfo" className="flex flex-col gap-1">
+            <section key="footerInfo" className={styles.infoSection}>
                 {/*
                     Наименование бренда
                 */}
-                <p
-                    className="text-[212px] leading-[90%] tracking-[-0.05em] font-normal text-center text-[#2F2C33] w-full"
-                >
+                <p className={styles.title}>
                     {footerInfo.title}
                 </p>
-                <div className="flex justify-between">
+                <div className={styles.infoRow}>
                     {/*
                         Левый блок под наименование бренда
                     */}
-                    <ul className="flex gap-5 p-0">
-                        {footerInfo.leftSection.map((item, index) => (
-                            <li key={index}>
+                    <ul className={styles.infoList}>
+                        {footerInfo.leftSection.map((item) => (
+                            <li key={item.text}>
                                 <a
                                     href={item.href}
-                                    className="text-[14px] leading-[130%] tracking-[-0.02em] font-normal text-[#67668299]"
+                                    className={styles.infoLink}
                                 >
                                     {item.text}
                                 </a>
@@ -35,12 +34,12 @@ const Footer = () => {
                     {/*
                         Правый блок под наименование бренда
                     */}
-                    <ul className="flex gap-5">
-                        {footerInfo.rightSection.map((item, index) => (
-                            <li key={index}>
+                    <ul className={styles.infoList}>
+                        {footerInfo.rightSection.map((item) => (
+                            <li key={item.text}>
                                 <a
                                     href={item.href}
-                                    className="text-[14px] leading-[130%] tracking-[-0.02em] font-normal text-[#67668299]"
+                                    className={styles.infoLink}
                                 >
                                     {item.text}
                                 </a>

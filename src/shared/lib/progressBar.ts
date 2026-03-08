@@ -28,7 +28,8 @@ export const progressBar: ProgressBarProps[] = [
 export const progressBarMove: ProgressBarMoveProps = {
     next: "Далее",
     back: "Назад",
-    offer: "Добавить в корзину"
+    offer: "Добавить в корзину",
+    offerShort: "В корзину"
 }
 
 // Переход Назад/Далее в ProgressBar

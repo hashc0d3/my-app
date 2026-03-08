@@ -1,0 +1,119 @@
+.section {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: #E1E9FE;
+  border-radius: 16px;
+  padding: 30px 35px;
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.cardTitle {
+  margin: 0 0 16px;
+  font-size: 22px;
+  line-height: 100%;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
+
+.items {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.itemBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.banners {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: 0;
+  row-gap: 10px;
+}
+
+/* Собственный размер из SVG (например SBP 57×27), без принудительного масштаба */
+.bannerIcon {
+  display: block;
+  height: auto;
+  width: auto;
+  max-height: 32px;
+  padding-right: 15px;
+}
+
+.separator {
+  width: 1px;
+  height: 24px;
+  margin-right: 15px;
+  background: #6766824D;
+}
+
+.descriptionList {
+  margin: 0;
+  padding-left: 0;
+}
+
+.descriptionItem {
+  list-style: disc;
+  list-style-position: inside;
+  color: #67668299;
+  white-space: pre-line;
+  font-size: 14px;
+  line-height: 130%;
+  font-weight: 400;
+}
+
+.descriptionItem::marker {
+  color: #676682;
+}
+
+.cardDescription {
+  color: #676682;
+  font-size: 16px;
+  line-height: 130%;
+  font-weight: 400;
+}
+
+@media (max-width: 960px) {
+  .section {
+    flex-wrap: wrap;
+  }
+
+  .card {
+    box-sizing: border-box;
+    flex: 0 0 calc((100% - 12px) / 2);
+  }
+
+  .card:nth-child(3) {
+    flex-basis: 100%;
+  }
+}
+
+@media (max-width: 639px) {
+  .section {
+    flex-direction: column;
+  }
+
+  .card {
+    flex-basis: 100%;
+  }
+
+  .itemBlock {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 8px;
+  }
+}

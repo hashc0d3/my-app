@@ -1,0 +1,114 @@
+.section {
+  padding-left: 250px;
+  padding-right: 250px;
+  padding-bottom: 90px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 68px;
+}
+
+@media (min-width: 641px) {
+  .section {
+    grid-template-columns: minmax(0, 56fr) minmax(0, 44fr);
+    align-items: start;
+  }
+}
+
+@media (max-width: 1440px) {
+  .section {
+    padding-left: 68px;
+    padding-right: 68px;
+    gap: 64px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .section {
+    padding-left: 50px;
+    padding-right: 50px;
+    gap: 56px;
+  }
+}
+
+@media (max-width: 960px) {
+  .section {
+    padding-left: 40px;
+    padding-right: 40px;
+    gap: 46px;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding-left: 20px;
+    padding-right: 20px;
+    gap: 30px;
+  }
+}
+
+.previewColumn {
+  align-self: flex-start;
+  position: sticky;
+  top: 120px;
+}
+
+@media (max-width: 640px) {
+  .previewColumn {
+    position: sticky;
+    top: 110px;
+    z-index: 2;
+    background: #ffffff;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    padding: 10px;
+  }
+
+  .previewColumn::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -110px;
+    height: 110px;
+    background: #ffffff;
+  }
+}
+
+.controlsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-radius: 24px;
+  background: #ffffff;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.title {
+  margin: 0;
+  font-size: 30px;
+  line-height: 100%;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #111111;
+}
+
+.price {
+  margin: 0;
+  font-size: 22px;
+  line-height: 110%;
+  font-weight: 600;
+  color: #111111;
+}
+
+.description,
+.leatherType {
+  margin: 0;
+  font-size: 12px;
+  line-height: 140%;
+  color: #676682;
+}

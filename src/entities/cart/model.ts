@@ -28,7 +28,7 @@ class CartStore {
   }
 
   private saveState = () => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || process.env.NODE_ENV === "production") return;
     window.localStorage.setItem(
       this.storageKey,
       JSON.stringify({
@@ -42,6 +42,10 @@ class CartStore {
   @action hydrateState = () => {
     if (this.hydrated) return;
     if (typeof window === "undefined") return;
+    if (process.env.NODE_ENV === "production") {
+      this.hydrated = true;
+      return;
+    }
     try {
       const raw = window.localStorage.getItem(this.storageKey);
       if (!raw) return;

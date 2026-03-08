@@ -71,7 +71,7 @@ class CheckoutStore {
   }
 
   private saveState = () => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined" || process.env.NODE_ENV === "production") return;
     try {
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(this.form));
     } catch {
@@ -83,6 +83,10 @@ class CheckoutStore {
     if (this._hydrated) return;
     if (typeof window === "undefined") return;
     this._hydrated = true;
+    if (process.env.NODE_ENV === "production") {
+      this.hydrated = true;
+      return;
+    }
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
       if (!raw) {

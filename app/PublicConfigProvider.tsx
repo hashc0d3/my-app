@@ -40,19 +40,29 @@ export function PublicConfigProvider({ children }: { children: React.ReactNode }
           }
         };
         appConfigStore.setConfig(mergedConfig);
+        const isProduction = process.env.NODE_ENV === "production";
         watchModelStore.setWatchModels(
-          Array.isArray(data.watchModels) && data.watchModels.length
-            ? data.watchModels
-            : watchModels
+          isProduction
+            ? (Array.isArray(data.watchModels) ? data.watchModels : [])
+            : Array.isArray(data.watchModels) && data.watchModels.length
+              ? data.watchModels
+              : watchModels
         );
         strapModelStore.setStrapModels(
-          Array.isArray(data.strapModels) && data.strapModels.length
-            ? data.strapModels
-            : strapModel
+          isProduction
+            ? (Array.isArray(data.strapModels) ? data.strapModels : [])
+            : Array.isArray(data.strapModels) && data.strapModels.length
+              ? data.strapModels
+              : strapModel
         );
       } catch {
         if (!isMounted) return;
-        applyFallbackConfig();
+        if (process.env.NODE_ENV !== "production") {
+          applyFallbackConfig();
+        } else {
+          watchModelStore.setWatchModels([]);
+          strapModelStore.setStrapModels([]);
+        }
       }
     };
 

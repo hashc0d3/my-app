@@ -43,8 +43,35 @@ const normalizeConfigMediaUrls = (value: unknown): unknown => {
 };
 
 export async function GET() {
-  const response = await apiFetch("/public/config");
-  const data = await response.json();
+  let response: Response;
+  try {
+    response = await apiFetch("/public/config");
+  } catch (err) {
+    console.error("[api/public/config] Backend request failed:", err);
+    return Response.json(
+      { error: "API unavailable" },
+      { status: 502 }
+    );
+  }
+
+  const contentType = response.headers.get("content-type") ?? "";
+  const isJson = contentType.includes("application/json");
+  const text = await response.text();
+  let data: unknown;
+  if (isJson && text) {
+    try {
+      data = JSON.parse(text) as unknown;
+    } catch {
+      data = {};
+    }
+  } else {
+    data = response.ok ? {} : { error: text || "Backend error" };
+  }
+
+  if (!response.ok) {
+    return Response.json(data, { status: response.status });
+  }
+
   const normalized = normalizeConfigMediaUrls(data);
-  return Response.json(normalized, { status: response.status });
+  return Response.json(normalized, { status: 200 });
 }

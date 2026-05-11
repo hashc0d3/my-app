@@ -5,7 +5,7 @@ import { strapConfiguratorStore } from '@/src/entities/strap-configurator';
 import { isStepInRange, WATCH_CONFIG_STEPS } from '@/src/shared/config/steps';
 
 function getMaxAllowedStep(): number {
-    let allowed = WATCH_CONFIG_STEPS.initial;
+    let allowed: number = WATCH_CONFIG_STEPS.initial;
     if (watchModelStore.isConfigurationComplete) allowed = 2;
     if (allowed === 2 && strapModelStore.isConfigurationComplete) allowed = 3;
     if (allowed === 3 && strapConfiguratorStore.isConfigurationComplete) allowed = WATCH_CONFIG_STEPS.max;

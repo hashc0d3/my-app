@@ -1,9 +1,9 @@
 node_modules
 .next
 .git
-server/node_modules
-server/dist
-server/uploads
+# Для веб-образа бэкенд не нужен (контекст web — корень репо).
+# Для api-образа контекст — ./server, и этот файл там не применяется.
+server
 *.md
 .env
 .env.*

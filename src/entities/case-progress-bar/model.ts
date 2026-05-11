@@ -7,7 +7,7 @@ function maxAllowedStep(): number {
 }
 
 class CaseProgressBarStore {
-  @observable currentStep = CASE_CONFIG_STEPS.initial;
+  @observable currentStep: number = CASE_CONFIG_STEPS.initial;
 
   constructor() {
     makeObservable(this);

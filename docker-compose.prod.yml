@@ -32,8 +32,8 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/postgres
       ADMIN_TOKEN: ${ADMIN_TOKEN}
-      WEB_ORIGIN: ${WEB_ORIGIN:-https://www.custom.slavalarionov.com}
-      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-https://www.custom.slavalarionov.com}
+      WEB_ORIGIN: ${WEB_ORIGIN:-https://custom.slavalarionov.com}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-https://custom.slavalarionov.com}
       UPLOADS_DIR: /data/uploads
       PORT: "4000"
     volumes:

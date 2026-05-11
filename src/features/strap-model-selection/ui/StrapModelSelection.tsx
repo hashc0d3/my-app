@@ -14,14 +14,14 @@ const StrapModelSelection = observer(() => {
 
     // Проверка совместимости текущего ремня с выбранной моделью часов
     useEffect(() => {
-        if (strapModelStore.currentStrap) {
+        if (strapModelStore.currentStrap !== null) {
             const selectedStrap = models.find(model => model.id === strapModelStore.currentStrap);
 
             if (selectedStrap && !selectedStrap.available.includes(watchModelStore.currentCard)) {
                 strapModelStore.setCurrentStrap(null, "", 0);
             }
         }
-    }, [models]);
+    }, [models, watchModelStore.currentCard, strapModelStore.currentStrap]);
 
     return (
         <section className={styles.section}>

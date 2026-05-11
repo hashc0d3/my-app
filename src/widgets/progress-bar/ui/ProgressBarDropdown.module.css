@@ -1,4 +1,3 @@
-/* Размер текста как в progressbar: 14px, на экранах ≤640px — 12px */
 .toggle {
   border-radius: 100px;
   display: flex;
@@ -11,17 +10,11 @@
   font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
   font-weight: 500;
   font-style: normal;
-  font-size: 14px;
+  font-size: var(--fs-body-sm);
   line-height: 130%;
   letter-spacing: 0;
   text-align: center;
   font-variant-numeric: lining-nums proportional-nums;
-}
-
-@media (max-width: 640px) {
-  .toggle {
-    font-size: 12px;
-  }
 }
 
 .toggle:hover {
@@ -90,22 +83,15 @@
   background-color: #bec8eb99 !important;
 }
 
-/* Как в progressbar: 14px / 12px при ≤640px */
 .menu :global(.dropdown-item) {
   color: #000000;
   font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
-  font-size: 14px;
+  font-size: var(--fs-body-sm);
   line-height: 130%;
   font-weight: 500;
   overflow-wrap: break-word;
   word-wrap: break-word;
   white-space: normal;
-}
-
-@media (max-width: 640px) {
-  .menu :global(.dropdown-item) {
-    font-size: 12px;
-  }
 }
 
 .menu :global(.dropdown-item:hover),
@@ -124,11 +110,8 @@
 
 .modalDialog {
   max-width: 340px;
-  min-height: 100vh;
-  margin: 0 auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .modalContent {
@@ -137,7 +120,7 @@
   background: #F3F4FA;
 }
 
-:global(.modalBackdrop) {
+.modalBackdrop {
   background: rgba(214, 223, 252, 0.35);
   backdrop-filter: blur(14px) saturate(140%);
   -webkit-backdrop-filter: blur(14px) saturate(140%);
@@ -153,7 +136,7 @@
   width: 100%;
   text-align: center;
   font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
-  font-size: 40px;
+  font-size: var(--fs-modal-hero);
   line-height: 90%;
   letter-spacing: -0.02em;
   font-weight: 500;
@@ -170,7 +153,7 @@
   border-radius: 50%;
   background: #E2E4F0;
   color: #9093A7;
-  font-size: 18px;
+  font-size: var(--fs-body-lg);
   line-height: 1;
   display: flex;
   align-items: center;
@@ -187,22 +170,15 @@
   text-align: center;
   color: #8A8CA1;
   font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
-  font-size: 14px;
+  font-size: var(--fs-body-sm);
   line-height: 130%;
   letter-spacing: 0;
-}
-
-@media (max-width: 640px) {
-  .modalHint {
-    font-size: 12px;
-  }
 }
 
 .modalBody .separator {
   margin: 0 0 12px;
 }
 
-/* Размер текста как в progressbar: 14px / 12px при ≤640px */
 .modalItem {
   display: block;
   width: 100%;
@@ -213,7 +189,7 @@
   cursor: pointer;
   color: #595B6F;
   font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
-  font-size: 14px;
+  font-size: var(--fs-body-sm);
   line-height: 130%;
   letter-spacing: 0;
   font-weight: 500;
@@ -225,10 +201,4 @@
 
 .modalItem:hover {
   background-color: rgba(0, 0, 0, 0.08);
-}
-
-@media (max-width: 640px) {
-  .modalItem {
-    font-size: 12px;
-  }
 }

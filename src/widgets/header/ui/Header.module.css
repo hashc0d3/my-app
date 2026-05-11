@@ -1,22 +1,15 @@
-/* Стили виджета Header. Адаптив: 1440, 1200, 959, 640px — отступы и шрифт. */
+/* Стили виджета Header. Отступы + типографика через --fs-* (globals.css). */
 .header {
   position: sticky;
   top: 0;
   z-index: 50;
   background: #5078DF;
   color: #FFFFFF;
-  font-size: 14px;
+  font-size: var(--fs-body-sm);
   line-height: 130%;
   font-weight: 400;
-  padding-left: 250px;
-  padding-right: 250px;
-}
-
-@media (max-width: 1440px) {
-  .header {
-    padding-left: 68px;
-    padding-right: 68px;
-  }
+  padding-left: 68px;
+  padding-right: 68px;
 }
 
 @media (max-width: 1200px) {
@@ -30,14 +23,20 @@
   .header {
     padding-left: 40px;
     padding-right: 40px;
-    font-size: 12px !important;
   }
 }
 
 @media (max-width: 640px) {
   .header {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+  }
+}
+
+@media (max-width: 359px) {
+  .header {
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
 }
 
@@ -82,6 +81,13 @@
 
 .leftItem::marker {
   color: #FFFFFF;
+}
+
+.logoLink {
+  display: inline-flex;
+  line-height: 0;
+  color: inherit;
+  text-decoration: none;
 }
 
 .logoWrap {

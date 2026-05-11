@@ -17,7 +17,7 @@
 
 .cardTitle {
   margin: 0 0 16px;
-  font-size: 22px;
+  font-size: var(--fs-lead);
   line-height: 100%;
   letter-spacing: -0.02em;
   font-weight: 500;
@@ -70,7 +70,7 @@
   list-style-position: inside;
   color: #67668299;
   white-space: pre-line;
-  font-size: 14px;
+  font-size: var(--fs-body-sm);
   line-height: 130%;
   font-weight: 400;
 }
@@ -81,7 +81,7 @@
 
 .cardDescription {
   color: #676682;
-  font-size: 16px;
+  font-size: var(--fs-body);
   line-height: 130%;
   font-weight: 400;
 }

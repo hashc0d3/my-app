@@ -9,7 +9,7 @@
   font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
   font-weight: 400;
   font-style: normal;
-  font-size: 16px;
+  font-size: var(--fs-body);
   line-height: 130%;
   letter-spacing: 0;
   text-align: center;
@@ -20,7 +20,7 @@
 
 @media (max-width: 959px) {
   .root {
-    font-size: 14px;
+    font-size: var(--fs-body-sm);
   }
 }
 
@@ -47,12 +47,12 @@
 }
 
 .label {
-  font-size: 16px;
+  font-size: var(--fs-body);
   line-height: 130%;
 }
 
 @media (max-width: 959px) {
   .label {
-    font-size: 14px;
+    font-size: var(--fs-body-sm);
   }
 }

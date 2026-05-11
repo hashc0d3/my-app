@@ -5,15 +5,28 @@ import { action, makeObservable, observable } from 'mobx';
  * Хранит только состояние модалки «Информация»; корзина — в entities/cart.
  */
 class HeaderStore {
-    @observable isOpenModal: boolean;
+    isOpenModal: boolean;
 
     constructor() {
-        makeObservable(this);
         this.isOpenModal = false;
+        makeObservable(this, {
+            isOpenModal: observable,
+            toggleModal: action,
+            openModal: action,
+            closeModal: action
+        });
     }
 
-    @action toggleModal = () => {
+    toggleModal = () => {
         this.isOpenModal = !this.isOpenModal;
+    };
+
+    openModal = () => {
+        this.isOpenModal = true;
+    };
+
+    closeModal = () => {
+        this.isOpenModal = false;
     };
 }
 

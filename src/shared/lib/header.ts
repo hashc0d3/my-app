@@ -1,21 +1,16 @@
 import {HeaderButton, HeaderButtonWithIconProps, HeaderModalContactsProps} from "@/src/shared/types/HeaderTypes";
+import { APP_ROUTES } from "@/src/shared/config/routes";
 
-// Кнопки перехода на главную страницу
+// Кнопки перехода на стартовую страницу (лендинг без ?step=)
 export const HeaderButtonsMain: HeaderButton = {
     name: "Вернуться на главную",
-    link: "#"
+    link: APP_ROUTES.home
 };
-
-// Кнопки перехода на страницы с товарами
-export const HeaderButtons: HeaderButton[] = [
-    {name: "Ремешки", link: "#"},
-    {name: "Чехлы", link: "#"}
-];
 
 // Кнопка перехода на страницу корзины
 export const HeaderButtonCart: HeaderButtonWithIconProps = {
     name: "Корзина",
-    link: "/cart",
+    link: APP_ROUTES.cart,
     icon: "/cart.svg"
 };
 

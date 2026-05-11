@@ -14,10 +14,12 @@ import { strapConfiguratorStore } from "@/src/entities/strap-configurator";
 import styles from "./ProgressBar.module.css";
 
 const HIGHLIGHT_DURATION_MS = 2500;
+const NEXT_CLICK_GUARD_MS = 400;
 
 const ProgressBar = observer(() => {
     const [isSticky, setIsSticky] = React.useState(false);
     const step3HighlightTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+    const nextClickGuardUntilRef = React.useRef(0);
 
     // Следование при скроле
     React.useEffect(() => {
@@ -35,10 +37,15 @@ const ProgressBar = observer(() => {
 
     // Валидация перехода к следующему шагу
     const validate = () => {
+        const now = Date.now();
+        if (now < nextClickGuardUntilRef.current) {
+            return;
+        }
         switch (progressBarStore.currentStep) {
             case 1: {
                 if (watchModelStore.isConfigurationComplete) {
                     progressBarStore.onNextStep(progressBarStore.currentStep);
+                    nextClickGuardUntilRef.current = Date.now() + NEXT_CLICK_GUARD_MS;
                 } else {
                     showToaster(watchModelStore.configurationMessage);
                 }
@@ -48,6 +55,7 @@ const ProgressBar = observer(() => {
             case 2: {
                 if (strapModelStore.isConfigurationComplete) {
                     progressBarStore.onNextStep(progressBarStore.currentStep);
+                    nextClickGuardUntilRef.current = Date.now() + NEXT_CLICK_GUARD_MS;
                 } else {
                     showToaster(strapModelStore.configurationMessage);
                 }
@@ -57,6 +65,7 @@ const ProgressBar = observer(() => {
             case 3: {
                 if (strapConfiguratorStore.isConfigurationComplete) {
                     progressBarStore.onNextStep(progressBarStore.currentStep);
+                    nextClickGuardUntilRef.current = Date.now() + NEXT_CLICK_GUARD_MS;
                 } else {
                     showToaster(strapConfiguratorStore.configurationMessage);
                     const missingKey = strapConfiguratorStore.missingFilterKey;

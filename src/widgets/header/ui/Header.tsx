@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { HeaderButtonCart, HeaderButtonInfo, HeaderButtons, HeaderButtonsMain } from "@/src/shared/lib/header";
+import { HeaderButtonCart, HeaderButtonInfo, HeaderButtonsMain } from "@/src/shared/lib/header";
 import Image from "next/image";
 import { HeaderButton } from "@/src/shared/types/HeaderTypes";
 import { cartStore } from "@/src/entities/cart";
@@ -10,6 +10,9 @@ import { headerStore } from "@/src/entities/header";
 import Link from "next/link";
 import { useHeader } from "../hooks";
 import styles from "./Header.module.css";
+import { progressBarStore } from "@/src/entities/progress-bar";
+import { caseProgressBarStore } from "@/src/entities/case-progress-bar";
+import { buildCaseStepRoute, buildHomeStepRoute } from "@/src/shared/config/routes";
 
 /**
  * Виджет Header (FSD: widgets/header).
@@ -18,6 +21,10 @@ import styles from "./Header.module.css";
  */
 const Header = observer(() => {
     const { isBurgerOpen, handleCartClick, toggleBurger } = useHeader();
+    const headerButtons: HeaderButton[] = [
+        { name: "Ремешки", link: buildHomeStepRoute(progressBarStore.currentStep) },
+        { name: "Чехлы", link: buildCaseStepRoute(caseProgressBarStore.currentStep) }
+    ];
 
     return (
         <header key="header" className={styles.header}>
@@ -27,10 +34,13 @@ const Header = observer(() => {
                     Левый блок кнопок
                 */}
                 <div className={styles.leftBlock}>
-                    <a href={HeaderButtonsMain.link}>{HeaderButtonsMain.name}</a>
+                    <Link href={HeaderButtonsMain.link}>{HeaderButtonsMain.name}</Link>
                     <ul className={styles.leftList}>
-                        {HeaderButtons.map((button: HeaderButton) =>
-                            <li key={button.name} className={styles.leftItem}><a href={button.link}>{button.name}</a></li>)
+                        {headerButtons.map((button: HeaderButton) => (
+                            <li key={button.name} className={styles.leftItem}>
+                                <Link href={button.link}>{button.name}</Link>
+                            </li>
+                        ))
                         }
                     </ul>
                 </div>
@@ -39,13 +49,15 @@ const Header = observer(() => {
                     Логотип
                 */}
                 <div className={styles.logoWrap}>
-                    <Image
-                        src="/logo.svg"
-                        alt="logo"
-                        width={136}
-                        height={29}
-                        className={styles.logo}
-                    />
+                    <Link href={HeaderButtonsMain.link} className={styles.logoLink} aria-label="На главную">
+                        <Image
+                            src="/logo.svg"
+                            alt=""
+                            width={136}
+                            height={29}
+                            className={styles.logo}
+                        />
+                    </Link>
                 </div>
 
                 {/*
@@ -70,14 +82,14 @@ const Header = observer(() => {
                         </Link>
                     </li>
                     <li key={HeaderButtonInfo.name} className={styles.contactItem}>
-                        <Link
-                            href={HeaderButtonInfo.link}
+                        <button
+                            type="button"
                             className={styles.actionLink}
-                            onClick={() => headerStore.toggleModal()}
+                            onClick={() => headerStore.openModal()}
                         >
                             <Image src={HeaderButtonInfo.icon} alt={HeaderButtonCart.name} width={18} height={20}/>
                             {HeaderButtonInfo.name}
-                        </Link>
+                        </button>
                     </li>
                     <li className={styles.burgerItem}>
                         <button
@@ -105,11 +117,11 @@ const Header = observer(() => {
             </nav>
 
             <div className={`${styles.mobileMenu} ${isBurgerOpen ? styles.mobileMenuOpen : styles.mobileMenuClosed}`}>
-                <a href={HeaderButtonsMain.link} className={styles.mobileMainLink}>{HeaderButtonsMain.name}</a>
+                <Link href={HeaderButtonsMain.link} className={styles.mobileMainLink}>{HeaderButtonsMain.name}</Link>
                 <ul className={styles.mobileList}>
-                    {HeaderButtons.map((button: HeaderButton) => (
+                    {headerButtons.map((button: HeaderButton) => (
                         <li key={button.name} className={styles.mobileListItem}>
-                            <a href={button.link}>{button.name}</a>
+                            <Link href={button.link}>{button.name}</Link>
                         </li>
                     ))}
                 </ul>

@@ -9,6 +9,14 @@ export async function POST(request: Request) {
     body: formData,
     admin: true
   });
-  const data = await response.json();
-  return Response.json(data, { status: response.status });
+  const raw = await response.text();
+  const contentType = response.headers.get("content-type") ?? "";
+  if (contentType.includes("application/json") && raw) {
+    try {
+      return Response.json(JSON.parse(raw) as unknown, { status: response.status });
+    } catch {
+      return new Response(raw, { status: response.status });
+    }
+  }
+  return new Response(raw || null, { status: response.status });
 }

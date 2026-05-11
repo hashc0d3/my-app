@@ -19,5 +19,6 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/package.json ./package.json
+RUN chmod +x ./scripts/start.sh
 EXPOSE 4000
 CMD ["./scripts/start.sh"]

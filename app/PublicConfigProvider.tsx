@@ -7,6 +7,8 @@ import { strapModelStore } from "@/src/entities/strap-model";
 import { watchModels } from "@/src/shared/lib/watchModel";
 import { strapModel } from "@/shared/lib/strapModel";
 import type { AppConfig } from "@/src/shared/types/AppConfigTypes";
+import { mergeAppConfig } from "@/src/shared/lib/mergeAppConfig";
+import { fetchPublicConfig } from "@/src/shared/lib/fetchPublicConfig";
 import { redirectToForbiddenIfNeeded } from "@/src/shared/lib/forbidden";
 
 export function PublicConfigProvider({ children }: { children: React.ReactNode }) {
@@ -18,50 +20,53 @@ export function PublicConfigProvider({ children }: { children: React.ReactNode }
       strapModelStore.setStrapModels(strapModel);
     };
 
-    const loadPublicConfig = async () => {
-      try {
-        const response = await fetch("/api/public/config", { cache: "no-store" });
-        if (redirectToForbiddenIfNeeded(response)) return;
-        if (!response.ok) throw new Error("Failed to load public config");
-        const data = (await response.json()) as AppConfig;
-        if (!isMounted) return;
+    const applyStoresFromPayload = (data: Partial<AppConfig>) => {
+      const isProduction = process.env.NODE_ENV === "production";
+      watchModelStore.setWatchModels(
+        isProduction
+          ? (Array.isArray(data.watchModels) ? data.watchModels : [])
+          : Array.isArray(data.watchModels) && data.watchModels.length
+            ? data.watchModels
+            : watchModels
+      );
+      strapModelStore.setStrapModels(
+        isProduction
+          ? (Array.isArray(data.strapModels) ? data.strapModels : [])
+          : Array.isArray(data.strapModels) && data.strapModels.length
+            ? data.strapModels
+            : strapModel
+      );
+    };
 
-        const step4FromApi = data.step4;
-        const defaultStep4 = defaultConfig.step4;
-        const apiSections = step4FromApi?.sections;
-        const useDefaultSections =
-          !Array.isArray(apiSections) || apiSections.length < 3;
-        const mergedConfig: AppConfig = {
-          ...data,
-          step4: {
-            ...defaultStep4,
-            ...step4FromApi,
-            sections: useDefaultSections ? (defaultStep4?.sections ?? []) : apiSections
+    const loadPublicConfig = async () => {
+      const maxAttempts = 2;
+      for (let attempt = 0; attempt < maxAttempts; attempt++) {
+        try {
+          const response = await fetchPublicConfig();
+          if (redirectToForbiddenIfNeeded(response)) return;
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const data = (await response.json()) as Partial<AppConfig>;
+          if (!isMounted) return;
+
+          const mergedConfig = mergeAppConfig(defaultConfig, data ?? {});
+          appConfigStore.setConfig(mergedConfig);
+          applyStoresFromPayload(data);
+          return;
+        } catch (err) {
+          if (attempt < maxAttempts - 1) {
+            await new Promise((r) => setTimeout(r, 500));
+            continue;
           }
-        };
-        appConfigStore.setConfig(mergedConfig);
-        const isProduction = process.env.NODE_ENV === "production";
-        watchModelStore.setWatchModels(
-          isProduction
-            ? (Array.isArray(data.watchModels) ? data.watchModels : [])
-            : Array.isArray(data.watchModels) && data.watchModels.length
-              ? data.watchModels
-              : watchModels
-        );
-        strapModelStore.setStrapModels(
-          isProduction
-            ? (Array.isArray(data.strapModels) ? data.strapModels : [])
-            : Array.isArray(data.strapModels) && data.strapModels.length
-              ? data.strapModels
-              : strapModel
-        );
-      } catch {
-        if (!isMounted) return;
-        if (process.env.NODE_ENV !== "production") {
-          applyFallbackConfig();
-        } else {
-          watchModelStore.setWatchModels([]);
-          strapModelStore.setStrapModels([]);
+          // eslint-disable-next-line no-console
+          console.error("[PublicConfigProvider] Не удалось загрузить /api/public/app-config:", err);
+          if (!isMounted) return;
+          if (process.env.NODE_ENV !== "production") {
+            applyFallbackConfig();
+          } else {
+            watchModelStore.setWatchModels([]);
+            strapModelStore.setStrapModels([]);
+          }
+          appConfigStore.setConfig(mergeAppConfig(defaultConfig, {}));
         }
       }
     };

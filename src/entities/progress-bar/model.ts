@@ -2,42 +2,49 @@ import { action, makeObservable, observable } from 'mobx';
 import { watchModelStore } from '@/src/entities/watch-model';
 import { strapModelStore } from '@/src/entities/strap-model';
 import { strapConfiguratorStore } from '@/src/entities/strap-configurator';
+import { isStepInRange, WATCH_CONFIG_STEPS } from '@/src/shared/config/steps';
 
 function getMaxAllowedStep(): number {
-    let allowed = 1;
+    let allowed = WATCH_CONFIG_STEPS.initial;
     if (watchModelStore.isConfigurationComplete) allowed = 2;
     if (allowed === 2 && strapModelStore.isConfigurationComplete) allowed = 3;
-    if (allowed === 3 && strapConfiguratorStore.isConfigurationComplete) allowed = 4;
+    if (allowed === 3 && strapConfiguratorStore.isConfigurationComplete) allowed = WATCH_CONFIG_STEPS.max;
     return allowed;
 }
 
 class ProgressBarStore {
-    @observable currentStep: number;
+    currentStep: number;
 
     constructor() {
-        makeObservable(this);
-        this.currentStep = 1;
+        this.currentStep = WATCH_CONFIG_STEPS.initial;
+        makeObservable(this, {
+            currentStep: observable,
+            setCurrentStep: action,
+            onSwitchStep: action,
+            onNextStep: action,
+            onPrevStep: action
+        });
     }
 
-    @action setCurrentStep = (step: number) => {
-        if (step >= 1 && step <= 4) {
+    setCurrentStep = (step: number) => {
+        if (isStepInRange(step, WATCH_CONFIG_STEPS.min, WATCH_CONFIG_STEPS.max)) {
             const maxAllowed = getMaxAllowedStep();
             this.currentStep = Math.min(step, maxAllowed);
         }
     }
 
-    @action onSwitchStep = (currentStep: number) => {
+    onSwitchStep = (currentStep: number) => {
         const maxAllowed = getMaxAllowedStep();
         this.currentStep = Math.min(currentStep, maxAllowed);
     }
 
-    @action onNextStep = (currentStep: number) => {
-        if (currentStep === 4) return;
+    onNextStep = (currentStep: number) => {
+        if (currentStep === WATCH_CONFIG_STEPS.max) return;
         this.currentStep = currentStep + 1;
     }
 
-    @action onPrevStep = (currentStep: number) => {
-        if (currentStep === 1) return;
+    onPrevStep = (currentStep: number) => {
+        if (currentStep === WATCH_CONFIG_STEPS.min) return;
         this.currentStep = currentStep - 1;
     }
 }

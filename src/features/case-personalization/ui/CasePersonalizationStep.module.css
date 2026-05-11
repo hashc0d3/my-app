@@ -1,0 +1,100 @@
+/* Двухколоночный макет как у шага конструктора ремешков (превью + контент) */
+.section {
+  padding-left: 68px;
+  padding-right: 68px;
+  padding-bottom: 90px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 68px;
+  align-items: start;
+}
+
+@media (min-width: 641px) {
+  .section {
+    grid-template-columns: minmax(0, 56fr) minmax(0, 44fr);
+  }
+}
+
+@media (max-width: 1399px) {
+  .section {
+    gap: 64px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .section {
+    padding-left: 50px;
+    padding-right: 50px;
+    gap: 56px;
+  }
+}
+
+@media (max-width: 960px) {
+  .section {
+    padding-left: 40px;
+    padding-right: 40px;
+    gap: 46px;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding-left: 20px;
+    padding-right: 20px;
+    gap: 30px;
+    padding-bottom: 48px;
+  }
+}
+
+.previewColumn {
+  align-self: flex-start;
+  position: sticky;
+  top: 120px;
+}
+
+@media (max-width: 640px) {
+  .previewColumn {
+    position: sticky;
+    top: 110px;
+    z-index: 2;
+    background: #ffffff;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    padding: 10px;
+  }
+}
+
+.contentColumn {
+  min-width: 0;
+}
+
+.title {
+  margin: 0 0 8px;
+  font-size: var(--fs-h2);
+  font-weight: 600;
+  color: #2f2c33;
+}
+
+.lead {
+  margin: 0 0 20px;
+  font-size: var(--fs-body);
+  line-height: 1.45;
+  color: #676682;
+}
+
+.textarea {
+  width: 100%;
+  min-height: 120px;
+  border-radius: 16px;
+  border: 1px solid #d8d8e4;
+  padding: 14px 16px;
+  font-size: var(--fs-body);
+  font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  resize: vertical;
+}
+
+.note {
+  margin-top: 10px;
+  font-size: var(--fs-caption);
+  color: #676682;
+}

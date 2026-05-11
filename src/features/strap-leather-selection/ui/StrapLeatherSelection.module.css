@@ -24,14 +24,14 @@
 
 .title {
   margin: 0 0 10px;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   line-height: 120%;
   font-weight: 400;
   color: #676682;
 }
 
 .titleLabel {
-  font-size: 17px;
+  font-size: var(--fs-body-lg);
   line-height: 120%;
   font-weight: 500;
   color: #111111;
@@ -51,7 +51,7 @@
   font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
   font-weight: 400;
   font-style: normal;
-  font-size: 14px;
+  font-size: var(--fs-body-sm);
   line-height: 130%;
   letter-spacing: 0;
   text-align: center;

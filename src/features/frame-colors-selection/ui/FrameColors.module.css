@@ -2,20 +2,13 @@
   width: 100%;
   margin-top: 25px;
   margin-bottom: 100px;
-  padding-left: 250px;
-  padding-right: 250px;
+  padding-left: 68px;
+  padding-right: 68px;
 }
 
 @media (max-width: 1199px) {
   .section {
     display: none;
-  }
-}
-
-@media (max-width: 1440px) {
-  .section {
-    padding-left: 68px;
-    padding-right: 68px;
   }
 }
 
@@ -86,12 +79,12 @@
 }
 
 .name {
-  font-size: 16px;
+  font-size: var(--fs-body);
   line-height: 20px;
 }
 
 @media (max-width: 640px) {
   .name {
-    font-size: 14px;
+    font-size: var(--fs-body-sm);
   }
 }

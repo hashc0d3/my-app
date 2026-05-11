@@ -1,8 +1,8 @@
-import { publicApiBaseUrl } from "@/src/shared/config/api";
+import { apiBaseUrl } from "@/src/shared/config/api";
 import type { ContentDto } from "@/src/shared/types/content";
 
 async function getContent(): Promise<ContentDto[]> {
-  const res = await fetch(`${publicApiBaseUrl}/public/contents`, { cache: "no-store" });
+  const res = await fetch(`${apiBaseUrl.replace(/\/+$/, "")}/public/contents`, { cache: "no-store" });
   if (!res.ok) return [];
   return res.json();
 }

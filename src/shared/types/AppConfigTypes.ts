@@ -2,6 +2,7 @@ import type { StrapConfig } from "@/src/shared/types/StrapConfigTypes";
 import type { StrapModelsProps } from "@/shared/types/StrapModelsTypes";
 import type { TitleStepSectionTypes } from "@/src/shared/types/TitleStepSectionTypes";
 import type { WatchModelCardProps } from "@/src/shared/types/WatchModelCardTypes";
+import type { PhoneCaseConfig } from "@/src/shared/types/PhoneCaseConfigTypes";
 
 export type ColorLibraryItem = {
   id: string;
@@ -63,4 +64,6 @@ export type AppConfig = {
   colorLibrary?: ColorLibraryItem[];
   promoCodes?: PromoCodeConfig[];
   step4?: Step4Config;
+  /** Конструктор чехлов iPhone (модели и превью); цвета — colorLibrary */
+  phoneCase?: PhoneCaseConfig;
 };

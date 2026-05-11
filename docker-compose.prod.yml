@@ -1,0 +1,94 @@
+# Прод: Postgres + API + Next + nginx (reverse proxy).
+# Сборка и запуск:
+#   cp deploy/env.example .env.production
+#   # задать ADMIN_TOKEN, при необходимости POSTGRES_PASSWORD и домен
+#   docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build
+#
+# DNS A/AAAA для www.custom.slavalarionov.com → IP сервера. TLS: см. комментарии в deploy/nginx/default.conf
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: my-app-db-prod
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: postgres
+    volumes:
+      - pgdata_prod:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+    networks: [app]
+
+  api:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: my-app-api-prod
+    environment:
+      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/postgres
+      ADMIN_TOKEN: ${ADMIN_TOKEN}
+      WEB_ORIGIN: ${WEB_ORIGIN:-https://www.custom.slavalarionov.com}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-https://www.custom.slavalarionov.com}
+      UPLOADS_DIR: /data/uploads
+      PORT: "4000"
+    volumes:
+      - uploads_prod:/data/uploads
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4000/public/config').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+      start_period: 60s
+    restart: unless-stopped
+    networks: [app]
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.web
+      args:
+        NEXT_PUBLIC_YANDEX_API_KEY: ${NEXT_PUBLIC_YANDEX_API_KEY:-}
+    container_name: my-app-web-prod
+    environment:
+      NODE_ENV: production
+      API_BASE_URL: http://api:4000
+      ADMIN_TOKEN: ${ADMIN_TOKEN}
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+    networks: [app]
+
+  nginx:
+    image: nginx:alpine
+    container_name: my-app-nginx-prod
+    ports:
+      - "80:80"
+    volumes:
+      - ./deploy/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - web
+    restart: unless-stopped
+    networks: [app]
+
+networks:
+  app:
+    driver: bridge
+
+volumes:
+  pgdata_prod:
+  uploads_prod:

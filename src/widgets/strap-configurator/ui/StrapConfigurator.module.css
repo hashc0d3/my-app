@@ -1,6 +1,6 @@
 .section {
-  padding-left: 250px;
-  padding-right: 250px;
+  padding-left: 68px;
+  padding-right: 68px;
   padding-bottom: 90px;
   display: grid;
   grid-template-columns: 1fr;
@@ -14,10 +14,8 @@
   }
 }
 
-@media (max-width: 1440px) {
+@media (max-width: 1399px) {
   .section {
-    padding-left: 68px;
-    padding-right: 68px;
     gap: 64px;
   }
 }
@@ -90,7 +88,7 @@
 
 .title {
   margin: 0;
-  font-size: 30px;
+  font-size: var(--fs-h2);
   line-height: 100%;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -99,7 +97,7 @@
 
 .price {
   margin: 0;
-  font-size: 22px;
+  font-size: var(--fs-lead);
   line-height: 110%;
   font-weight: 600;
   color: #111111;
@@ -108,7 +106,7 @@
 .description,
 .leatherType {
   margin: 0;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   line-height: 140%;
   color: #676682;
 }

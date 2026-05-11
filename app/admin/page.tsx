@@ -24,6 +24,14 @@ import type {
 import type { WatchModelCardProps } from "@/src/shared/types/WatchModelCardTypes";
 import type { StrapModelsProps } from "@/src/shared/types/StrapModelsTypes";
 import type { MediaDto } from "@/src/shared/types/content";
+import type {
+  PhoneCaseColorVariant,
+  PhoneCaseConfig,
+  PhoneCaseFormType
+} from "@/src/shared/types/PhoneCaseConfigTypes";
+import { normalizePhoneCaseConfig } from "@/src/shared/lib/phoneCaseConfig";
+import { mergeAppConfig, resolveStep4 } from "@/src/shared/lib/mergeAppConfig";
+import { fetchPublicConfig } from "@/src/shared/lib/fetchPublicConfig";
 import { defaultConfig } from "@/src/entities/app-config";
 import styles from "./page.module.css";
 
@@ -33,7 +41,8 @@ const tabItems = [
   { id: 3, label: "Шаг 3" },
   { id: 4, label: "Шаг 4" },
   { id: 5, label: "Цвета" },
-  { id: 6, label: "Промокоды" }
+  { id: 6, label: "Промокоды" },
+  { id: 7, label: "Чехлы" }
 ];
 
 const emptyLayers = (): StrapLayersByView => ({ front: "", side: "", back: "" });
@@ -78,6 +87,31 @@ const emptyPromoCode = (): PromoCodeConfig => ({
   type: "amount",
   value: 0,
   remainingUses: 0
+});
+
+const emptyIphoneModel = (): { id: string; label: string } => ({
+  id: `iphone-${Date.now()}`,
+  label: ""
+});
+
+const emptyPhoneCaseColorVariant = (): PhoneCaseColorVariant => ({
+  colorId: "",
+  image1: "",
+  image2: "",
+  image3: ""
+});
+
+const emptyPhoneCaseFormType = (): PhoneCaseFormType => ({
+  id: `case-form-${Date.now()}`,
+  label: "",
+  price: 4990,
+  basePreview: {
+    previewMain: "",
+    previewThumb1: "",
+    previewThumb2: ""
+  },
+  outsideVariants: [],
+  insideVariants: []
 });
 
 const emptyEdgeType = (): StrapEdgeTypeOption => ({
@@ -162,138 +196,6 @@ const emptyStep4Section = (): Step4SectionConfig => ({
   inputInfoLabel: "",
   inputPlaceholder: ""
 });
-
-const createWristStep4Section = (): Step4SectionConfig => ({
-  id: "step4-card-wrist",
-  title: "Обхват запястья",
-  description: "",
-  price: 0,
-  ctaLabel: "",
-  image: "",
-  video: "",
-  downloadLinkText: "",
-  downloadLinkUrl: "",
-  options: [],
-  placementLabel: "Выберите обхват запястья"
-});
-
-const isWristStep4Section = (section: Step4SectionConfig): boolean =>
-  section.id === "step4-card-wrist" ||
-  section.id.startsWith("step4-card-wrist-") ||
-  section.title?.trim()?.toLowerCase() === "обхват запястья";
-
-const makeDefaultStep4Sections = (): Step4SectionConfig[] => [
-  createWristStep4Section(),
-  {
-    id: `step4-card-initials-${Date.now()}`,
-    title: "Тиснение инициалов",
-    description: "Они наносятся специальными литерами и создают изящный рельеф на коже.",
-    price: 390,
-    ctaLabel: "Добавить к заказу",
-    image: "",
-    imageDescription: "Пример тиснения внутри ремешка",
-    options: [],
-    methodLabel: "Как нанести инициалы?",
-    methodColorIds: [],
-    placementLabel: "Где нанести инициалы?",
-    placementOptions: ["Снаружи", "Внутри"],
-    inputLabel: "Текст инициалов",
-    inputInfoLabel: "До 3 символов, только верхний регистр",
-    inputPlaceholder: "В.Л"
-  },
-  {
-    id: `step4-card-engraving-${Date.now() + 1}`,
-    title: "Гравировка",
-    description: "",
-    price: 990,
-    ctaLabel: "Добавить к заказу",
-    image: "",
-    imageDescription: "",
-    options: [],
-    methodLabel: "",
-    methodColorIds: [],
-    placementLabel: "",
-    placementOptions: [],
-    inputLabel: "",
-    inputInfoLabel: "",
-    inputPlaceholder: ""
-  },
-  {
-    id: `step4-card-package-${Date.now() + 2}`,
-    title: "Подарочная упаковка",
-    description: "",
-    price: 290,
-    ctaLabel: "Добавить к заказу",
-    image: "",
-    imageDescription: "",
-    options: [],
-    methodLabel: "",
-    methodColorIds: [],
-    placementLabel: "",
-    placementOptions: [],
-    inputLabel: "",
-    inputInfoLabel: "",
-    inputPlaceholder: ""
-  }
-];
-
-const normalizeStep4Sections = (sections?: Step4SectionConfig[]): Step4SectionConfig[] => {
-  const defaults = makeDefaultStep4Sections();
-  const safeSections = Array.isArray(sections) ? sections : [];
-
-  if (!safeSections.length) {
-    return defaults;
-  }
-
-  const defaultWrist = createWristStep4Section();
-  const currentWrist = safeSections.find(isWristStep4Section);
-  const otherSections = safeSections.filter((section) => !isWristStep4Section(section));
-
-  const wristSection: Step4SectionConfig = currentWrist
-    ? {
-        ...defaultWrist,
-        ...currentWrist,
-        // keep a stable id for predictable rendering/recognition
-        id: "step4-card-wrist",
-        // keep empty draft options so admin can add/edit rows
-        options: Array.isArray(currentWrist.options) ? currentWrist.options : []
-      }
-    : defaultWrist;
-
-  return [wristSection, ...otherSections];
-};
-
-const resolveStep4 = (step4?: Step4Config): Required<Step4Config> => ({
-  title: step4?.title ?? "",
-  description: step4?.description ?? "",
-  ctaLabel: step4?.ctaLabel ?? "",
-  readyDate: step4?.readyDate ?? "",
-  readyDateNote: step4?.readyDateNote ?? "",
-  sections: normalizeStep4Sections(step4?.sections)
-});
-
-const mergeConfig = (base: AppConfig, incoming: Partial<AppConfig>): AppConfig => {
-  const incomingStep4 = incoming.step4;
-  const apiSections = incomingStep4?.sections;
-  const baseSections = base.step4?.sections ?? [];
-  const mergedSections = normalizeStep4Sections(
-    Array.isArray(apiSections) ? apiSections : baseSections
-  );
-  return {
-    ...base,
-    ...incoming,
-    colorLibrary: Array.isArray(incoming.colorLibrary) ? incoming.colorLibrary : base.colorLibrary ?? [],
-    titleStepSection: {
-      ...base.titleStepSection,
-      ...incoming.titleStepSection
-    },
-    step4: {
-      ...base.step4,
-      ...incoming.step4,
-      sections: mergedSections
-    }
-  };
-};
 
 const resolveModelStep3Config = (
   model: StrapModelsProps,
@@ -555,9 +457,9 @@ export default function AdminPage() {
     const load = async () => {
       setStatus(null);
       try {
-        const res = await fetch("/api/public/config", { cache: "no-store" });
+        const res = await fetchPublicConfig();
         const data = res.ok ? await res.json() : {};
-        const merged = mergeConfig(defaultConfig, data ?? {});
+        const merged = mergeAppConfig(defaultConfig, data ?? {});
         const palette = merged.colorLibrary ?? [];
         merged.strapModels = (merged.strapModels ?? []).map((model) => ({
           ...model,
@@ -4859,6 +4761,569 @@ export default function AdminPage() {
               ))
             )}
           </div>
+        </div>
+      )}
+
+      {activeTab === 7 && (
+        <div className="card p-3 shadow-sm">
+          <h5 className="mb-2">Конструктор чехлов (iPhone)</h5>
+          <p className="text-muted small mb-3">
+            Палитра задаётся на вкладке «Цвета». Для каждого типа формы укажите цену, три базовых кадра и для
+            каждого добавленного цвета — три фото. Загрузка с диска или по URL — как у ремешков.
+          </p>
+
+          <Collapsible title="Тип формы" defaultOpen>
+            <div className="d-flex justify-content-end mb-3">
+              <button
+                type="button"
+                className="btn btn-outline-primary btn-sm"
+                onClick={() =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    phoneCase: normalizePhoneCaseConfig({
+                      ...(prev.phoneCase ?? {}),
+                      formTypes: [...(prev.phoneCase?.formTypes ?? []), emptyPhoneCaseFormType()]
+                    } as Record<string, unknown>)
+                  }))
+                }
+              >
+                Добавить тип формы
+              </button>
+            </div>
+
+            {(config.phoneCase?.formTypes ?? []).length === 0 ? (
+              <div className="text-muted">
+                Добавьте хотя бы один тип формы (например «Закрытая», «Открытая»).
+              </div>
+            ) : (
+              (config.phoneCase?.formTypes ?? []).map((ft, ftIndex) => (
+                <div key={ft.id} className="border rounded p-3 mb-3 bg-light">
+                  <div className="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+                    <h6 className="mb-0">Тип формы #{ftIndex + 1}</h6>
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger btn-sm"
+                      onClick={() =>
+                        setConfig((prev) => {
+                          const next = [...(prev.phoneCase?.formTypes ?? [])];
+                          next.splice(ftIndex, 1);
+                          return {
+                            ...prev,
+                            phoneCase: normalizePhoneCaseConfig({
+                              ...(prev.phoneCase ?? {}),
+                              formTypes: next
+                            } as Record<string, unknown>)
+                          };
+                        })
+                      }
+                    >
+                      Удалить тип
+                    </button>
+                  </div>
+
+                  <div className="row g-2 mb-3">
+                    <div className="col-md-6">
+                      <label className="form-label">Название</label>
+                      <input
+                        className="form-control"
+                        value={ft.label}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          setConfig((prev) => {
+                            const types = [...(prev.phoneCase?.formTypes ?? [])];
+                            types[ftIndex] = { ...types[ftIndex], label: value };
+                            return {
+                              ...prev,
+                              phoneCase: normalizePhoneCaseConfig({
+                                ...(prev.phoneCase ?? {}),
+                                formTypes: types
+                              } as Record<string, unknown>)
+                            };
+                          });
+                        }}
+                        placeholder="Закрытая форма"
+                      />
+                    </div>
+                    <div className="col-md-6">
+                      <label className="form-label">Цена, ₽</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        value={ft.price}
+                        onChange={(event) => {
+                          const v = Number(event.target.value) || 0;
+                          setConfig((prev) => {
+                            const types = [...(prev.phoneCase?.formTypes ?? [])];
+                            types[ftIndex] = { ...types[ftIndex], price: v };
+                            return {
+                              ...prev,
+                              phoneCase: normalizePhoneCaseConfig({
+                                ...(prev.phoneCase ?? {}),
+                                formTypes: types
+                              } as Record<string, unknown>)
+                            };
+                          });
+                        }}
+                      />
+                    </div>
+                  </div>
+
+                  <p className="small text-muted mb-2">Базовые три изображения (если для цвета нет своих фото)</p>
+                  <div className="row g-3 mb-3">
+                    <div className="col-md-4">
+                      <ImageField
+                        label="Кадр 1 (главный)"
+                        value={ft.basePreview.previewMain}
+                        onChange={(value) =>
+                          setConfig((prev) => {
+                            const types = [...(prev.phoneCase?.formTypes ?? [])];
+                            types[ftIndex] = {
+                              ...types[ftIndex],
+                              basePreview: { ...types[ftIndex].basePreview, previewMain: value }
+                            };
+                            return {
+                              ...prev,
+                              phoneCase: normalizePhoneCaseConfig({
+                                ...(prev.phoneCase ?? {}),
+                                formTypes: types
+                              } as Record<string, unknown>)
+                            };
+                          })
+                        }
+                        onUpload={uploadImage}
+                      />
+                    </div>
+                    <div className="col-md-4">
+                      <ImageField
+                        label="Кадр 2"
+                        value={ft.basePreview.previewThumb1}
+                        onChange={(value) =>
+                          setConfig((prev) => {
+                            const types = [...(prev.phoneCase?.formTypes ?? [])];
+                            types[ftIndex] = {
+                              ...types[ftIndex],
+                              basePreview: { ...types[ftIndex].basePreview, previewThumb1: value }
+                            };
+                            return {
+                              ...prev,
+                              phoneCase: normalizePhoneCaseConfig({
+                                ...(prev.phoneCase ?? {}),
+                                formTypes: types
+                              } as Record<string, unknown>)
+                            };
+                          })
+                        }
+                        onUpload={uploadImage}
+                      />
+                    </div>
+                    <div className="col-md-4">
+                      <ImageField
+                        label="Кадр 3"
+                        value={ft.basePreview.previewThumb2}
+                        onChange={(value) =>
+                          setConfig((prev) => {
+                            const types = [...(prev.phoneCase?.formTypes ?? [])];
+                            types[ftIndex] = {
+                              ...types[ftIndex],
+                              basePreview: { ...types[ftIndex].basePreview, previewThumb2: value }
+                            };
+                            return {
+                              ...prev,
+                              phoneCase: normalizePhoneCaseConfig({
+                                ...(prev.phoneCase ?? {}),
+                                formTypes: types
+                              } as Record<string, unknown>)
+                            };
+                          })
+                        }
+                        onUpload={uploadImage}
+                      />
+                    </div>
+                  </div>
+
+                  <Collapsible title="Цвет снаружи" defaultOpen>
+                    <div className="mb-3">
+                      <label className="form-label small">Добавить цвет из палитры «Цвета»</label>
+                      <select
+                        className="form-select form-select-sm"
+                        value=""
+                        onChange={(event) => {
+                          const colorId = event.target.value;
+                          if (!colorId) return;
+                          setConfig((prev) => {
+                            const types = [...(prev.phoneCase?.formTypes ?? [])];
+                            const cur = { ...types[ftIndex] };
+                            if (cur.outsideVariants.some((v) => v.colorId === colorId)) {
+                              return prev;
+                            }
+                            cur.outsideVariants = [
+                              ...cur.outsideVariants,
+                              { ...emptyPhoneCaseColorVariant(), colorId }
+                            ];
+                            types[ftIndex] = cur;
+                            return {
+                              ...prev,
+                              phoneCase: normalizePhoneCaseConfig({
+                                ...(prev.phoneCase ?? {}),
+                                formTypes: types
+                              } as Record<string, unknown>)
+                            };
+                          });
+                          event.target.value = "";
+                        }}
+                      >
+                        <option value="">Выберите цвет…</option>
+                        {(config.colorLibrary ?? [])
+                          .filter((c) => !ft.outsideVariants.some((v) => v.colorId === c.id))
+                          .map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.name || c.id} ({c.hex})
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+
+                    {ft.outsideVariants.length === 0 ? (
+                      <div className="text-muted small">Нет цветов — в конструкторе не будет выбора снаружи.</div>
+                    ) : (
+                      ft.outsideVariants.map((variant, vIndex) => {
+                        const colorMeta = config.colorLibrary?.find((c) => c.id === variant.colorId);
+                        return (
+                          <div key={`${variant.colorId}-${vIndex}`} className="border rounded p-2 mb-3 bg-white">
+                            <div className="d-flex justify-content-between align-items-center mb-2">
+                              <span className="fw-semibold small">
+                                <ColorLabel name={colorMeta?.name} hex={colorMeta?.hex} />
+                              </span>
+                              <button
+                                type="button"
+                                className="btn btn-outline-danger btn-sm"
+                                onClick={() =>
+                                  setConfig((prev) => {
+                                    const types = [...(prev.phoneCase?.formTypes ?? [])];
+                                    const cur = { ...types[ftIndex] };
+                                    cur.outsideVariants = cur.outsideVariants.filter((_, i) => i !== vIndex);
+                                    types[ftIndex] = cur;
+                                    return {
+                                      ...prev,
+                                      phoneCase: normalizePhoneCaseConfig({
+                                        ...(prev.phoneCase ?? {}),
+                                        formTypes: types
+                                      } as Record<string, unknown>)
+                                    };
+                                  })
+                                }
+                              >
+                                Удалить цвет
+                              </button>
+                            </div>
+                            <div className="row g-2">
+                              <div className="col-md-4">
+                                <ImageField
+                                  label="Фото 1"
+                                  value={variant.image1}
+                                  onChange={(value) =>
+                                    setConfig((prev) => {
+                                      const types = [...(prev.phoneCase?.formTypes ?? [])];
+                                      const cur = { ...types[ftIndex] };
+                                      const ov = [...cur.outsideVariants];
+                                      ov[vIndex] = { ...ov[vIndex], image1: value };
+                                      cur.outsideVariants = ov;
+                                      types[ftIndex] = cur;
+                                      return {
+                                        ...prev,
+                                        phoneCase: normalizePhoneCaseConfig({
+                                          ...(prev.phoneCase ?? {}),
+                                          formTypes: types
+                                        } as Record<string, unknown>)
+                                      };
+                                    })
+                                  }
+                                  onUpload={uploadImage}
+                                />
+                              </div>
+                              <div className="col-md-4">
+                                <ImageField
+                                  label="Фото 2"
+                                  value={variant.image2}
+                                  onChange={(value) =>
+                                    setConfig((prev) => {
+                                      const types = [...(prev.phoneCase?.formTypes ?? [])];
+                                      const cur = { ...types[ftIndex] };
+                                      const ov = [...cur.outsideVariants];
+                                      ov[vIndex] = { ...ov[vIndex], image2: value };
+                                      cur.outsideVariants = ov;
+                                      types[ftIndex] = cur;
+                                      return {
+                                        ...prev,
+                                        phoneCase: normalizePhoneCaseConfig({
+                                          ...(prev.phoneCase ?? {}),
+                                          formTypes: types
+                                        } as Record<string, unknown>)
+                                      };
+                                    })
+                                  }
+                                  onUpload={uploadImage}
+                                />
+                              </div>
+                              <div className="col-md-4">
+                                <ImageField
+                                  label="Фото 3"
+                                  value={variant.image3}
+                                  onChange={(value) =>
+                                    setConfig((prev) => {
+                                      const types = [...(prev.phoneCase?.formTypes ?? [])];
+                                      const cur = { ...types[ftIndex] };
+                                      const ov = [...cur.outsideVariants];
+                                      ov[vIndex] = { ...ov[vIndex], image3: value };
+                                      cur.outsideVariants = ov;
+                                      types[ftIndex] = cur;
+                                      return {
+                                        ...prev,
+                                        phoneCase: normalizePhoneCaseConfig({
+                                          ...(prev.phoneCase ?? {}),
+                                          formTypes: types
+                                        } as Record<string, unknown>)
+                                      };
+                                    })
+                                  }
+                                  onUpload={uploadImage}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </Collapsible>
+
+                  <Collapsible title="Цвет внутри" defaultOpen>
+                    <div className="mb-3">
+                      <label className="form-label small">Добавить цвет из палитры «Цвета»</label>
+                      <select
+                        className="form-select form-select-sm"
+                        value=""
+                        onChange={(event) => {
+                          const colorId = event.target.value;
+                          if (!colorId) return;
+                          setConfig((prev) => {
+                            const types = [...(prev.phoneCase?.formTypes ?? [])];
+                            const cur = { ...types[ftIndex] };
+                            if (cur.insideVariants.some((v) => v.colorId === colorId)) {
+                              return prev;
+                            }
+                            cur.insideVariants = [
+                              ...cur.insideVariants,
+                              { ...emptyPhoneCaseColorVariant(), colorId }
+                            ];
+                            types[ftIndex] = cur;
+                            return {
+                              ...prev,
+                              phoneCase: normalizePhoneCaseConfig({
+                                ...(prev.phoneCase ?? {}),
+                                formTypes: types
+                              } as Record<string, unknown>)
+                            };
+                          });
+                          event.target.value = "";
+                        }}
+                      >
+                        <option value="">Выберите цвет…</option>
+                        {(config.colorLibrary ?? [])
+                          .filter((c) => !ft.insideVariants.some((v) => v.colorId === c.id))
+                          .map((c) => (
+                            <option key={c.id} value={c.id}>
+                              {c.name || c.id} ({c.hex})
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+
+                    {ft.insideVariants.length === 0 ? (
+                      <div className="text-muted small">Нет цветов — в конструкторе не будет выбора внутри.</div>
+                    ) : (
+                      ft.insideVariants.map((variant, vIndex) => {
+                        const colorMeta = config.colorLibrary?.find((c) => c.id === variant.colorId);
+                        return (
+                          <div key={`in-${variant.colorId}-${vIndex}`} className="border rounded p-2 mb-3 bg-white">
+                            <div className="d-flex justify-content-between align-items-center mb-2">
+                              <span className="fw-semibold small">
+                                <ColorLabel name={colorMeta?.name} hex={colorMeta?.hex} />
+                              </span>
+                              <button
+                                type="button"
+                                className="btn btn-outline-danger btn-sm"
+                                onClick={() =>
+                                  setConfig((prev) => {
+                                    const types = [...(prev.phoneCase?.formTypes ?? [])];
+                                    const cur = { ...types[ftIndex] };
+                                    cur.insideVariants = cur.insideVariants.filter((_, i) => i !== vIndex);
+                                    types[ftIndex] = cur;
+                                    return {
+                                      ...prev,
+                                      phoneCase: normalizePhoneCaseConfig({
+                                        ...(prev.phoneCase ?? {}),
+                                        formTypes: types
+                                      } as Record<string, unknown>)
+                                    };
+                                  })
+                                }
+                              >
+                                Удалить цвет
+                              </button>
+                            </div>
+                            <div className="row g-2">
+                              <div className="col-md-4">
+                                <ImageField
+                                  label="Фото 1"
+                                  value={variant.image1}
+                                  onChange={(value) =>
+                                    setConfig((prev) => {
+                                      const types = [...(prev.phoneCase?.formTypes ?? [])];
+                                      const cur = { ...types[ftIndex] };
+                                      const iv = [...cur.insideVariants];
+                                      iv[vIndex] = { ...iv[vIndex], image1: value };
+                                      cur.insideVariants = iv;
+                                      types[ftIndex] = cur;
+                                      return {
+                                        ...prev,
+                                        phoneCase: normalizePhoneCaseConfig({
+                                          ...(prev.phoneCase ?? {}),
+                                          formTypes: types
+                                        } as Record<string, unknown>)
+                                      };
+                                    })
+                                  }
+                                  onUpload={uploadImage}
+                                />
+                              </div>
+                              <div className="col-md-4">
+                                <ImageField
+                                  label="Фото 2"
+                                  value={variant.image2}
+                                  onChange={(value) =>
+                                    setConfig((prev) => {
+                                      const types = [...(prev.phoneCase?.formTypes ?? [])];
+                                      const cur = { ...types[ftIndex] };
+                                      const iv = [...cur.insideVariants];
+                                      iv[vIndex] = { ...iv[vIndex], image2: value };
+                                      cur.insideVariants = iv;
+                                      types[ftIndex] = cur;
+                                      return {
+                                        ...prev,
+                                        phoneCase: normalizePhoneCaseConfig({
+                                          ...(prev.phoneCase ?? {}),
+                                          formTypes: types
+                                        } as Record<string, unknown>)
+                                      };
+                                    })
+                                  }
+                                  onUpload={uploadImage}
+                                />
+                              </div>
+                              <div className="col-md-4">
+                                <ImageField
+                                  label="Фото 3"
+                                  value={variant.image3}
+                                  onChange={(value) =>
+                                    setConfig((prev) => {
+                                      const types = [...(prev.phoneCase?.formTypes ?? [])];
+                                      const cur = { ...types[ftIndex] };
+                                      const iv = [...cur.insideVariants];
+                                      iv[vIndex] = { ...iv[vIndex], image3: value };
+                                      cur.insideVariants = iv;
+                                      types[ftIndex] = cur;
+                                      return {
+                                        ...prev,
+                                        phoneCase: normalizePhoneCaseConfig({
+                                          ...(prev.phoneCase ?? {}),
+                                          formTypes: types
+                                        } as Record<string, unknown>)
+                                      };
+                                    })
+                                  }
+                                  onUpload={uploadImage}
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })
+                    )}
+                  </Collapsible>
+                </div>
+              ))
+            )}
+          </Collapsible>
+
+          <Collapsible title="Модели iPhone" defaultOpen>
+            <div className="d-flex justify-content-between align-items-center mt-2 mb-2">
+              <h6 className="mb-0">Список моделей</h6>
+              <button
+                type="button"
+                className="btn btn-outline-primary btn-sm"
+                onClick={() =>
+                  setConfig((prev) => ({
+                    ...prev,
+                    phoneCase: normalizePhoneCaseConfig({
+                      ...(prev.phoneCase ?? {}),
+                      iphoneModels: [...(prev.phoneCase?.iphoneModels ?? []), emptyIphoneModel()]
+                    } as Record<string, unknown>)
+                  }))
+                }
+              >
+                Добавить модель
+              </button>
+            </div>
+            <div className="d-flex flex-column gap-2">
+              {(config.phoneCase?.iphoneModels ?? []).length === 0 ? (
+                <div className="text-muted">Список пуст — добавьте хотя бы одну модель.</div>
+              ) : (
+                (config.phoneCase?.iphoneModels ?? []).map((model, index) => (
+                  <div key={model.id} className="row g-2 align-items-end border rounded p-2">
+                    <div className="col-md-10">
+                      <label className="form-label">Название (как в списке)</label>
+                      <input
+                        className="form-control"
+                        value={model.label}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          setConfig((prev) => {
+                            const list = [...(prev.phoneCase?.iphoneModels ?? [])];
+                            list[index] = { ...list[index], label: value };
+                            return {
+                              ...prev,
+                              phoneCase: normalizePhoneCaseConfig({
+                                ...(prev.phoneCase ?? {}),
+                                iphoneModels: list
+                              } as Record<string, unknown>)
+                            };
+                          });
+                        }}
+                        placeholder="17 Pro Max"
+                      />
+                    </div>
+                    <div className="col-md-2 text-end">
+                      <button
+                        type="button"
+                        className="btn btn-outline-danger btn-sm"
+                        onClick={() =>
+                          setConfig((prev) => ({
+                            ...prev,
+                            phoneCase: normalizePhoneCaseConfig({
+                              ...(prev.phoneCase ?? {}),
+                              iphoneModels: (prev.phoneCase?.iphoneModels ?? []).filter((_, i) => i !== index)
+                            } as Record<string, unknown>)
+                          }))
+                        }
+                      >
+                        Удалить
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </Collapsible>
         </div>
       )}
       </div>

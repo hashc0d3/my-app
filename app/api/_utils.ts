@@ -7,7 +7,11 @@ export async function apiFetch(path: string, init?: RequestInit & { admin?: bool
     if (token) headers.set("x-admin-token", token);
   }
 
-  return fetch(`${apiBaseUrl}${path}`, {
+  const base = apiBaseUrl.replace(/\/+$/, "");
+  const suffix = path.startsWith("/") ? path : `/${path}`;
+  const url = `${base}${suffix}`;
+
+  return fetch(url, {
     ...init,
     headers,
     cache: "no-store"

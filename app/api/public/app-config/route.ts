@@ -1,7 +1,9 @@
 import { apiFetch } from "@/app/api/_utils";
 
-const ABSOLUTE_MEDIA_URL_RE =
-  /^https?:\/\/(?:localhost|127\.0\.0\.1):4000\/public\/media\/([^/?#]+)([?#].*)?$/i;
+export const runtime = "nodejs";
+
+const ABSOLUTE_PUBLIC_MEDIA_RE =
+  /^https?:\/\/[^/]+\/public\/media\/([^/?#]+)([?#].*)?$/i;
 const RELATIVE_MEDIA_URL_RE = /^\/public\/media\/([^/?#]+)([?#].*)?$/;
 
 const normalizeMediaUrl = (value: string): string => {
@@ -9,7 +11,7 @@ const normalizeMediaUrl = (value: string): string => {
     return value;
   }
 
-  const absoluteMatch = value.match(ABSOLUTE_MEDIA_URL_RE);
+  const absoluteMatch = value.match(ABSOLUTE_PUBLIC_MEDIA_RE);
   if (absoluteMatch) {
     const [, id, suffix = ""] = absoluteMatch;
     return `/api/public/media/${id}${suffix}`;
@@ -47,11 +49,8 @@ export async function GET() {
   try {
     response = await apiFetch("/public/config");
   } catch (err) {
-    console.error("[api/public/config] Backend request failed:", err);
-    return Response.json(
-      { error: "API unavailable" },
-      { status: 502 }
-    );
+    console.error("[api/public/app-config] Backend request failed:", err);
+    return Response.json({ error: "API unavailable" }, { status: 502 });
   }
 
   const contentType = response.headers.get("content-type") ?? "";

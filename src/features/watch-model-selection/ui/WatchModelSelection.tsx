@@ -12,14 +12,14 @@ const WatchModelSelection = observer(() => {
     return (
         <section className={styles.section}>
             <div className={styles.cards}>
-                {models.map((model) => {
-                    const isActive = watchModelStore.currentCard === model.id;
+                {models.map((model, modelIdx) => {
+                    const isActive = watchModelStore.currentCardIndex === modelIdx;
 
                     return (
                         <Card
-                            key={model.id}
+                            key={`${model.id}-${modelIdx}`}
                             isActive={isActive}
-                            onClick={() => watchModelStore.setCurrentCard(model.id, model.model)}
+                            onClick={() => watchModelStore.setCurrentCard(model.id, model.model, modelIdx)}
                             className={styles.card}
                         >
                             <Image
@@ -44,13 +44,13 @@ const WatchModelSelection = observer(() => {
                                             type="button"
                                             key={size}
                                             className={`${styles.sizeButton} ${
-                                                watchModelStore.selectedSize === size
+                                                isActive && watchModelStore.selectedSize === size
                                                     ? styles.sizeActive
                                                     : styles.sizeInactive
                                             }`}
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                watchModelStore.setSelectedSize(size, model.id, model.model);
+                                                watchModelStore.setSelectedSize(size, model.id, model.model, modelIdx);
                                             }}
                                         >
                                             {size}mm
@@ -65,11 +65,13 @@ const WatchModelSelection = observer(() => {
                                                 key={`${model.id}-${colorIdx}`}
                                                 type="button"
                                                 className={`${styles.colorChip} ${
-                                                    watchModelStore.selectedColor?.hex === color.hex ? styles.colorChipActive : ""
+                                                    watchModelStore.selectedColorKey === `${modelIdx}:${colorIdx}`
+                                                        ? styles.colorChipActive
+                                                        : ""
                                                 }`}
                                                 onClick={(e) => {
                                                     e.stopPropagation();
-                                                    watchModelStore.setSelectedColor(color);
+                                                    watchModelStore.setSelectedColor(color, `${modelIdx}:${colorIdx}`);
                                                 }}
                                                 aria-label={color.name}
                                                 title={color.name}

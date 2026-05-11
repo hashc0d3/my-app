@@ -4,8 +4,8 @@ import { observer } from "mobx-react";
 import { useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { Header } from "@/src/widgets/header";
-import { HeaderInfoModal } from "@/src/features/header-info-modal";
 import { headerStore } from "@/src/entities/header";
 import { cartStore } from "@/src/entities/cart";
 import { showToaster } from "@/src/shared/lib/toaster";
@@ -15,8 +15,14 @@ import { watchModelStore } from "@/src/entities/watch-model";
 import { strapModelStore } from "@/src/entities/strap-model";
 import { strapConfiguratorStore } from "@/src/entities/strap-configurator";
 import { Footer } from "@/src/widgets/footer";
-import EditItemModal from "./EditItemModal";
+import { buildHomeStepRoute, APP_ROUTES } from "@/src/shared/config/routes";
+import { WATCH_CONFIG_STEPS } from "@/src/shared/config/steps";
 import styles from "./CartContent.module.css";
+
+const HeaderInfoModal = dynamic(
+  () => import("@/src/features/header-info-modal/ui/HeaderInfoModal").then((m) => m.default)
+);
+const EditItemModal = dynamic(() => import("./EditItemModal").then((m) => m.default));
 
 const EMPTY_CART_MESSAGE = "Корзина пустая, пожалуйста добавьте товар";
 
@@ -34,7 +40,7 @@ const CartContent = observer(() => {
     if (!cartStore.hydrated) return;
     if (cartStore.itemsList.length === 0) {
       showToaster(EMPTY_CART_MESSAGE);
-      router.replace("/");
+      router.replace(APP_ROUTES.home);
     }
   }, [cartStore.hydrated, cartStore.itemsList.length, router]);
 
@@ -105,7 +111,7 @@ const CartContent = observer(() => {
 
   return (
     <div>
-      <main className={headerStore.isOpenModal ? "blur-[15px]" : ""}>
+      <main className={`${headerStore.isOpenModal ? "blur-[15px]" : ""} w-full min-w-0 max-w-full overflow-x-hidden`}>
         <Header />
         <section className={styles.section}>
           <div className={styles.topBlock}>
@@ -204,8 +210,8 @@ const CartContent = observer(() => {
                       watchModelStore.resetSelection();
                       strapModelStore.resetSelection();
                       strapConfiguratorStore.resetSelection();
-                      progressBarStore.setCurrentStep(1);
-                      router.push("/?step=1");
+                      progressBarStore.setCurrentStep(WATCH_CONFIG_STEPS.initial);
+                      router.push(buildHomeStepRoute(WATCH_CONFIG_STEPS.initial));
                     }}
                   >
                     Добавить еще изделие

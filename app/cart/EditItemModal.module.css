@@ -6,14 +6,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 15.625rem; /* 250px — как px-62.5 */
+  padding: 4.25rem; /* 68px — как container-padding при ≥1440 (включ. 1920) */
   background: rgba(35, 35, 42, 0.42);
-}
-
-@media (max-width: 1440px) {
-  .overlay {
-    padding: 4.25rem; /* 68px — как px-17 */
-  }
 }
 
 @media (max-width: 1200px) {
@@ -54,36 +48,17 @@
   position: relative;
 }
 
-/* Редактирование изделия: Onest 500, 32px, 100%, -2%, center, lining-nums proportional-nums */
 .title {
   margin: 0;
   color: #2f2c33;
   font-family: var(--font-onest), Onest, ui-sans-serif, system-ui, sans-serif;
   font-weight: 500;
   font-style: normal;
-  font-size: 32px;
+  font-size: var(--fs-h2);
   line-height: 100%;
   letter-spacing: -0.02em;
   text-align: center;
   font-variant-numeric: lining-nums proportional-nums;
-}
-
-@media (max-width: 959px) {
-  .title {
-    font-size: 28px;
-  }
-}
-
-@media (max-width: 639px) {
-  .title {
-    font-size: 26px;
-  }
-}
-
-@media (max-width: 479px) {
-  .title {
-    font-size: 18px;
-  }
 }
 
 /* Крестик закрытия — как в модалке «Контакты»: та же иконка, по центру по вертикали, 20×20 при < 640px */
@@ -153,14 +128,13 @@
   padding-right: 24px;
 }
 
-/* Текст пунктов: Onest 500, 22px, 100%, -2%, lining-nums. Отступ снизу: 30px, < 960px 28px, < 640px 26px */
 .strapTitle {
   margin: 0 0 30px;
   color: #2f2c33;
   font-family: var(--font-onest), Onest, ui-sans-serif, system-ui, sans-serif;
   font-weight: 500;
   font-style: normal;
-  font-size: 22px;
+  font-size: var(--fs-lead);
   line-height: 100%;
   letter-spacing: -0.02em;
   font-variant-numeric: lining-nums proportional-nums;
@@ -169,20 +143,12 @@
 @media (max-width: 959px) {
   .strapTitle {
     margin-bottom: 28px;
-    font-size: 20px;
   }
 }
 
 @media (max-width: 639px) {
   .strapTitle {
-    font-size: 18px;
     margin-bottom: 26px;
-  }
-}
-
-@media (max-width: 359px) {
-  .strapTitle {
-    font-size: 16px;
   }
 }
 
@@ -206,7 +172,7 @@
   font-family: var(--font-onest), Onest, ui-sans-serif, system-ui, sans-serif;
   font-weight: 500;
   font-style: normal;
-  font-size: 22px;
+  font-size: var(--fs-lead);
   line-height: 100%;
   letter-spacing: -0.02em;
   font-variant-numeric: lining-nums proportional-nums;
@@ -217,28 +183,7 @@
 }
 
 .summaryLabel {
-  font-size: 22px;
-}
-
-@media (max-width: 959px) {
-  .summary,
-  .summaryLabel {
-    font-size: 20px;
-  }
-}
-
-@media (max-width: 639px) {
-  .summary,
-  .summaryLabel {
-    font-size: 18px;
-  }
-}
-
-@media (max-width: 359px) {
-  .summary,
-  .summaryLabel {
-    font-size: 16px;
-  }
+  font-size: inherit;
 }
 
 .summaryIconWrap {
@@ -302,7 +247,7 @@
   background: transparent;
   color: #4f79df;
   font-family: var(--font-onest), Onest, ui-sans-serif, system-ui, sans-serif;
-  font-size: 14px;
+  font-size: var(--fs-body-sm);
   line-height: 1.4;
   cursor: pointer;
   text-align: left;
@@ -313,37 +258,23 @@
 }
 
 .editParamArrow {
-  font-size: 18px;
+  font-size: var(--fs-body-lg);
   line-height: 1;
   color: #4f79df;
 }
 
-/* Текст рядом с селекторами: Onest 400, 16px, 130%, center, lining-nums proportional-nums; < 960px 14px, < 640px 12px */
 .label {
   color: #3c3c46;
   font-family: var(--font-onest), Onest, ui-sans-serif, system-ui, sans-serif;
   font-weight: 400;
   font-style: normal;
-  font-size: 16px;
+  font-size: var(--fs-body);
   line-height: 130%;
   letter-spacing: 0;
   text-align: left;
   font-variant-numeric: lining-nums proportional-nums;
 }
 
-@media (max-width: 959px) {
-  .label {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 639px) {
-  .label {
-    font-size: 12px;
-  }
-}
-
-/* Селекторы: та же типографика — Onest 400, 16px, 130%, center, lining-nums; < 960px 14px, < 640px 12px */
 .select {
   width: 100%;
   max-width: 260px;
@@ -357,7 +288,7 @@
   font-family: var(--font-onest), Onest, ui-sans-serif, system-ui, sans-serif;
   font-weight: 400;
   font-style: normal;
-  font-size: 16px;
+  font-size: var(--fs-body);
   line-height: 130%;
   letter-spacing: 0;
   text-align: left;
@@ -366,55 +297,58 @@
   -webkit-appearance: none;
 }
 
-@media (max-width: 959px) {
-  .select {
-    font-size: 14px;
-  }
-}
-
-@media (max-width: 639px) {
-  .select {
-    font-size: 12px;
-  }
+.textarea {
+  width: 100%;
+  border: 1px solid #6b8de8;
+  border-radius: 18px;
+  background: #eceef5;
+  color: #2f2c33;
+  padding: 12px 14px;
+  font-family: var(--font-onest), Onest, ui-sans-serif, system-ui, sans-serif;
+  font-weight: 400;
+  font-size: var(--fs-body);
+  line-height: 130%;
+  letter-spacing: 0;
+  resize: vertical;
+  min-height: 110px;
 }
 
 .footer {
   margin-top: 18px;
 }
 
-/* Как summaryLabel/summaryValue на 4-м шаге: 22px, < 640px 18px */
 .total {
   display: flex;
   align-items: baseline;
+  gap: var(--leader-gap);
   color: #2f2c33;
   font-family: var(--font-onest), Onest, ui-sans-serif, system-ui, sans-serif;
   font-weight: 500;
-  font-size: 22px;
+  font-size: var(--fs-lead);
   line-height: 100%;
   letter-spacing: -0.02em;
   font-variant-numeric: lining-nums proportional-nums;
 }
 
-@media (max-width: 639px) {
-  .total {
-    font-size: 18px;
-  }
+.total > span:first-child {
+  flex: 0 1 auto;
+}
+
+.total > span:last-child {
+  flex: 0 0 auto;
 }
 
 .dots {
   flex: 1;
-  margin: 0 10px;
-  height: 1px;
-  background: repeating-linear-gradient(
-    90deg,
-    #b8b8c4 0,
-    #b8b8c4 5px,
-    transparent 5px,
-    transparent 10px
-  );
+  margin: 0;
+  align-self: baseline;
+  min-height: 1em;
+  background-image: var(--leader-line-image);
+  background-size: var(--leader-line-bg-size);
+  background-repeat: repeat-x;
+  background-position: left bottom;
 }
 
-/* Как checkoutButton на 4-м шаге: 16px, < 640px 14px */
 .submit {
   margin-top: 12px;
   width: 100%;
@@ -423,17 +357,14 @@
   background: #4f79df;
   color: #ffffff;
   padding: 12px 18px;
-  font: 500 16px/1.3 var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  font-size: var(--fs-body);
+  line-height: 1.3;
   font-variant-numeric: lining-nums proportional-nums;
   letter-spacing: 0;
   text-align: center;
   cursor: pointer;
-}
-
-@media (max-width: 639px) {
-  .submit {
-    font-size: 14px;
-  }
 }
 
 @media (max-width: 960px) {

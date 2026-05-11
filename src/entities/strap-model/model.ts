@@ -1,21 +1,32 @@
 import { action, computed, makeObservable, observable } from 'mobx';
 import {StrapModelsProps} from "@/shared/types/StrapModelsTypes";
+import { strapModel as staticStrapModels } from "@/shared/lib/strapModel";
 
 const STORAGE_KEY = "my-app/strap-model";
 
 class StrapModelStore {
-    @observable strapModels: StrapModelsProps[];
-    @observable currentStrap: number | null;
-    @observable selectedStrapName: string | null;
-    @observable selectedStrapPrice: number | null;
+    strapModels: StrapModelsProps[] = [];
+    currentStrap: number | null;
+    selectedStrapName: string | null;
+    selectedStrapPrice: number | null;
 
     constructor() {
-        makeObservable(this);
-        this.strapModels = [];
         this.currentStrap = null;
         this.selectedStrapName = null;
         this.selectedStrapPrice = null;
-        this.hydrateState();
+        makeObservable(this, {
+            strapModels: observable,
+            currentStrap: observable,
+            selectedStrapName: observable,
+            selectedStrapPrice: observable,
+            isConfigurationComplete: computed,
+            configurationMessage: computed,
+            setCurrentStrap: action,
+            setStrapModels: action,
+            resetSelection: action
+        });
+        this.setStrapModels(staticStrapModels);
+        this.scheduleHydrateFromStorage();
     }
 
     private saveState = () => {
@@ -30,49 +41,51 @@ class StrapModelStore {
         );
     };
 
-    private hydrateState = () => {
-        if (typeof window === "undefined" || process.env.NODE_ENV === "production") return;
-        try {
-            const raw = window.localStorage.getItem(STORAGE_KEY);
-            if (!raw) return;
-            const parsed = JSON.parse(raw) as {
-                currentStrap?: number | null;
-                selectedStrapName?: string | null;
-                selectedStrapPrice?: number | null;
-            };
-            this.currentStrap = parsed.currentStrap ?? null;
-            this.selectedStrapName = parsed.selectedStrapName ?? null;
-            this.selectedStrapPrice = parsed.selectedStrapPrice ?? null;
-        } catch {
-            // ignore broken localStorage value
-        }
+    private scheduleHydrateFromStorage = () => {
+        queueMicrotask(() => {
+            if (typeof window === "undefined" || process.env.NODE_ENV === "production") return;
+            try {
+                const raw = window.localStorage.getItem(STORAGE_KEY);
+                if (!raw) return;
+                const parsed = JSON.parse(raw) as {
+                    currentStrap?: number | null;
+                    selectedStrapName?: string | null;
+                    selectedStrapPrice?: number | null;
+                };
+                this.currentStrap = parsed.currentStrap ?? null;
+                this.selectedStrapName = parsed.selectedStrapName ?? null;
+                this.selectedStrapPrice = parsed.selectedStrapPrice ?? null;
+            } catch {
+                // ignore broken localStorage value
+            }
+        });
     };
 
-    @computed get isConfigurationComplete(): boolean {
+    get isConfigurationComplete(): boolean {
         return (
             this.currentStrap !== null
         );
     }
 
-    @computed get configurationMessage(): string {
+    get configurationMessage(): string {
         if (this.currentStrap === null) {
             return 'Выберите модель';
         }
         return 'Все параметры выбраны';
     }
 
-    @action setCurrentStrap = (currentStrap: number | null, strapName: string, strapPrice: number) => {
+    setCurrentStrap = (currentStrap: number | null, strapName: string, strapPrice: number) => {
         this.currentStrap = currentStrap;
         this.selectedStrapName = strapName;
         this.selectedStrapPrice = strapPrice;
         this.saveState();
     }
 
-    @action setStrapModels = (models: StrapModelsProps[]) => {
+    setStrapModels = (models: StrapModelsProps[]) => {
         this.strapModels = models;
     }
 
-    @action resetSelection = () => {
+    resetSelection = () => {
         this.currentStrap = null;
         this.selectedStrapName = null;
         this.selectedStrapPrice = null;

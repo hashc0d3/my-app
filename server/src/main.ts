@@ -7,8 +7,12 @@ import { env } from "./config/env";
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const origins = env.webOrigin
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
   app.enableCors({
-    origin: env.webOrigin,
+    origin: origins.length <= 1 ? (origins[0] ?? env.webOrigin) : origins,
     credentials: true
   });
 
@@ -16,7 +20,8 @@ async function bootstrap() {
     new ValidationPipe({
       whitelist: true,
       transform: true,
-      forbidNonWhitelisted: true
+      // multipart (upload) даёт поля в body; forbidNonWhitelisted ломает POST /admin/media/upload
+      forbidNonWhitelisted: false
     })
   );
 

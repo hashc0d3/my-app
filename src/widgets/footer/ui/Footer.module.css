@@ -5,15 +5,8 @@
   background: #FFFFFF;
   color: #000000;
   padding-bottom: 32px;
-  padding-left: 250px;
-  padding-right: 250px;
-}
-
-@media (max-width: 1440px) {
-  .footer {
-    padding-left: 68px;
-    padding-right: 68px;
-  }
+  padding-left: 68px;
+  padding-right: 68px;
 }
 
 @media (max-width: 1200px) {
@@ -32,8 +25,15 @@
 
 @media (max-width: 640px) {
   .footer {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: max(20px, env(safe-area-inset-left, 0px));
+    padding-right: max(20px, env(safe-area-inset-right, 0px));
+  }
+}
+
+@media (max-width: 359px) {
+  .footer {
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
   }
 }
 
@@ -109,7 +109,7 @@
 
 @media (max-width: 640px) {
   .infoLink {
-    font-size: 12px;
+    font-size: var(--fs-xs);
   }
 
   .infoList {

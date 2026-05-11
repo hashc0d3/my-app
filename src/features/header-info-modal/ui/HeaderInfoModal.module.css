@@ -40,22 +40,9 @@
   }
 }
 
-/* 1. Заголовок: 32px, < 960px 28px, < 640px 24px */
 .modalTitle {
-  font-size: 32px;
+  font-size: var(--fs-h2);
   color: #2f2c33;
-}
-
-@media (max-width: 959px) {
-  .modalTitle {
-    font-size: 28px;
-  }
-}
-
-@media (max-width: 639px) {
-  .modalTitle {
-    font-size: 24px;
-  }
 }
 
 /* Отступ сверху от номера и почты */
@@ -63,26 +50,13 @@
   padding-top: 25px;
 }
 
-/* 2. Телефон и почта: 22px, < 960px 22px, < 640px 18px */
 .contactLink {
-  font-size: 22px;
+  font-size: var(--fs-lead);
   line-height: 100%;
   letter-spacing: -0.02em;
   font-weight: 500;
   color: #5078df;
   text-align: center;
-}
-
-@media (max-width: 959px) {
-  .contactLink {
-    font-size: 22px;
-  }
-}
-
-@media (max-width: 639px) {
-  .contactLink {
-    font-size: 18px;
-  }
 }
 
 /* Кнопки WhatsApp / Telegram */

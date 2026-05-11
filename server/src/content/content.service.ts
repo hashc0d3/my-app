@@ -1,7 +1,6 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CreateContentDto, UpdateContentDto } from "./dto";
-import { env } from "../config/env";
 
 @Injectable()
 export class ContentService {
@@ -66,7 +65,7 @@ export class ContentService {
       ...item,
       image: {
         ...item.image,
-        url: `${env.publicBaseUrl}/public/media/${item.image.id}`
+        url: `/api/public/media/${item.image.id}`
       }
     };
   }

@@ -1,0 +1,238 @@
+.wrap {
+  /* Укладываем hero + карточки в первый экран (шапка и подписи учтены в расчёте .visual) */
+  padding-top: clamp(12px, 2vh, 24px);
+  padding-bottom: clamp(16px, 2.5vh, 36px);
+  background: #ffffff;
+}
+
+.hero {
+  margin: 0 auto clamp(16px, 2.5vh, 28px);
+  max-width: 28em;
+  text-align: center;
+  font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  font-size: var(--fs-marketing);
+  line-height: 100%;
+  letter-spacing: -0.03em;
+  color: #2f2c33;
+}
+
+.heroLine1 {
+  display: block;
+}
+
+.heroLine2 {
+  display: block;
+  margin-top: 0.12em;
+}
+
+.brand {
+  color: #676682;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: start;
+  gap: clamp(12px, 1.8vw, 24px);
+  width: 100%;
+  max-width: min(1784px, 100%);
+  margin: 0 auto;
+}
+
+/* Две строки — только при ширине до 360px включительно */
+@media (max-width: 360px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: clamp(10px, 2vh, 16px);
+  }
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 28px;
+  color: inherit;
+  font: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.card:focus-visible {
+  outline: 2px solid #4f79df;
+  outline-offset: 4px;
+}
+
+.cardInner {
+  border-radius: 28px;
+  overflow: hidden;
+  width: 100%;
+  box-shadow: 0 18px 48px rgba(47, 44, 51, 0.08);
+}
+
+.visual {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 560 / 720;
+  /* Шапка ~72px + заголовок + подписи карточек + поля — резерв под «хром» первого экрана */
+  max-height: min(
+    calc(100svh - clamp(260px, 34vh, 380px)),
+    min(62vh, 520px)
+  );
+  box-sizing: border-box;
+  isolation: isolate;
+}
+
+@media (max-width: 1399px) {
+  .visual {
+    max-height: min(
+      calc(100svh - clamp(270px, 35vh, 390px)),
+      min(58vh, 480px)
+    );
+  }
+}
+
+@media (max-width: 1199px) {
+  .visual {
+    max-height: min(
+      calc(100svh - clamp(275px, 36vh, 400px)),
+      min(56vh, 440px)
+    );
+  }
+}
+
+@media (max-width: 959px) {
+  .visual {
+    max-height: min(
+      calc(100svh - clamp(280px, 38vh, 420px)),
+      min(54vh, 400px)
+    );
+  }
+}
+
+@media (max-width: 360px) {
+  /* Две строки карточек: делим доступную высоту пополам */
+  .visual {
+    aspect-ratio: 4 / 5;
+    max-height: min(
+      calc((100svh - clamp(240px, 42vh, 320px)) / 2),
+      38vh
+    );
+  }
+}
+
+.visual::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+  background: rgba(47, 44, 51, 0);
+  transition: background 0.2s ease;
+}
+
+.card:hover .visual::after {
+  background: rgba(47, 44, 51, 0.14);
+}
+
+.card:active .visual::after {
+  background: rgba(47, 44, 51, 0.24);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .visual::after {
+    transition: none;
+  }
+}
+
+/* Фон блока — только .webp */
+.bgLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.bgFill {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* По центру поверх фона — только .png */
+.foreground {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(12px, 2.2vw, 36px);
+  pointer-events: none;
+}
+
+/* Макет: ~213×375, полупрозрачное стекло поверх webp */
+.glass {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  overflow: hidden;
+  width: min(213px, 58%);
+  max-width: calc(100% - 8px);
+  aspect-ratio: 213 / 375;
+  max-height: min(375px, 78%);
+  padding: clamp(10px, 2.4vw, 20px);
+  border-radius: 26px;
+  background: #ffffff99;
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  box-shadow:
+    0 12px 40px rgba(47, 44, 51, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+@media (max-width: 360px) {
+  .glass {
+    width: min(213px, 72%);
+    max-height: 76%;
+  }
+}
+
+.foregroundImg {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+.caption {
+  margin-top: clamp(8px, 1.2vh, 14px);
+  text-align: center;
+  font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 500;
+  font-size: var(--fs-lead);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: #2f2c33;
+}
+
+.captionLine2 {
+  display: block;
+  margin-top: 2px;
+  font-weight: 400;
+  font-size: var(--fs-body);
+  color: #6e6d88;
+}

@@ -7,15 +7,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-left: 250px;
-  padding-right: 250px;
-}
-
-@media (max-width: 1440px) {
-  .root {
-    padding-left: 68px;
-    padding-right: 68px;
-  }
+  padding-left: 68px;
+  padding-right: 68px;
 }
 
 @media (max-width: 1200px) {
@@ -82,7 +75,7 @@
   font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
   font-weight: 500;
   font-style: normal;
-  font-size: 14px;
+  font-size: var(--fs-body-sm);
   line-height: 130%;
   letter-spacing: 0;
   text-align: center;
@@ -175,7 +168,7 @@
   font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
   font-weight: 500;
   font-style: normal;
-  font-size: 14px;
+  font-size: var(--fs-body-sm);
   line-height: 130%;
   letter-spacing: 0;
   text-align: center;
@@ -193,7 +186,7 @@
   font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
   font-weight: 500;
   font-style: normal;
-  font-size: 14px;
+  font-size: var(--fs-body-sm);
   line-height: 130%;
   letter-spacing: 0;
   text-align: center;
@@ -254,16 +247,3 @@
   }
 }
 
-/* Текст блока 12px на узких экранах (правило в конце файла, чтобы перекрыть базовый 14px) */
-@media (max-width: 640px) {
-  .root {
-    font-size: 12px;
-  }
-
-  .stepItem,
-  .stepName,
-  .actionBack,
-  .actionNext {
-    font-size: 12px !important;
-  }
-}

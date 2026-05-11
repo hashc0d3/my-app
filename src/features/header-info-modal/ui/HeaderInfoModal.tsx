@@ -17,7 +17,7 @@ const HeaderInfoModal = observer(() => {
             <Modal
                 contentClassName="rounded-4 bg-white border-0"
                 show={headerStore.isOpenModal}
-                onHide={() => headerStore.toggleModal()}
+                onHide={() => headerStore.closeModal()}
                 centered
                 size="xl"
                 dialogClassName="modal-1080"
@@ -32,7 +32,7 @@ const HeaderInfoModal = observer(() => {
                         src="/closeIcon.svg"
                         alt="close"
                         className={styles.modalClose}
-                        onClick={() => headerStore.toggleModal()}
+                        onClick={() => headerStore.closeModal()}
                     />
                 </Modal.Header>
                 <Modal.Body className="flex flex-col justify-center items-center border-t border-[#67668233] container-padding">

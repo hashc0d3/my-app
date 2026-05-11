@@ -1,5 +1,9 @@
 import { action, makeObservable, observable } from "mobx";
 import type { AppConfig } from "@/src/shared/types/AppConfigTypes";
+import type { PhoneCaseConfig } from "@/src/shared/types/PhoneCaseConfigTypes";
+import { normalizePhoneCaseConfig } from "@/src/shared/lib/phoneCaseConfig";
+
+const defaultPhoneCase: PhoneCaseConfig = normalizePhoneCaseConfig({});
 
 const defaultConfig: AppConfig = {
   titleStepSection: {
@@ -13,6 +17,7 @@ const defaultConfig: AppConfig = {
   },
   colorLibrary: [],
   promoCodes: [],
+  phoneCase: defaultPhoneCase,
   step4: {
     title: "Итого",
     description: "",
@@ -93,27 +98,27 @@ const defaultConfig: AppConfig = {
 };
 
 class AppConfigStore {
-  @observable config: AppConfig;
+  config: AppConfig;
 
   constructor() {
-    makeObservable(this);
     this.config = defaultConfig;
+    makeObservable(this, {
+      config: observable,
+      setConfig: action
+    });
   }
 
-  @action setConfig = (partial: Partial<AppConfig>) => {
+  /**
+   * Целиком подставляет конфиг с API (без частичных merge — см. mergeAppConfig).
+   */
+  setConfig(next: AppConfig): void {
     this.config = {
-      ...this.config,
-      ...partial,
-      titleStepSection: {
-        ...this.config.titleStepSection,
-        ...partial.titleStepSection
-      },
-      step4: {
-        ...this.config.step4,
-        ...partial.step4
-      }
+      ...next,
+      phoneCase: normalizePhoneCaseConfig(
+        (next.phoneCase ?? defaultPhoneCase) as Partial<PhoneCaseConfig> & Record<string, unknown>
+      )
     };
-  };
+  }
 }
 
 const appConfigStore = new AppConfigStore();

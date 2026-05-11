@@ -35,21 +35,20 @@ interface CurrentSelectionConfig {
 }
 
 class StrapConfiguratorStore {
-  @observable selectedStrapTypeId: string | null;
-  @observable selectedLeatherTypeId: string | null;
-  @observable selectedLeatherColorId: string | null;
-  @observable selectedEdgeTypeId: string | null;
-  @observable selectedStitchTypeId: string | null;
-  @observable selectedBuckleColorId: string | null;
-  @observable selectedBuckleVariant: BuckleVariant;
-  @observable selectedAdapterColorId: string | null;
-  @observable activeView: StrapView;
-  @observable config: StrapConfig;
-  @observable preferredDefaultColorHex: string | null;
-  @observable highlightFilterKey: Step3FilterKey | null;
+  selectedStrapTypeId: string | null;
+  selectedLeatherTypeId: string | null;
+  selectedLeatherColorId: string | null;
+  selectedEdgeTypeId: string | null;
+  selectedStitchTypeId: string | null;
+  selectedBuckleColorId: string | null;
+  selectedBuckleVariant: BuckleVariant;
+  selectedAdapterColorId: string | null;
+  activeView: StrapView;
+  config: StrapConfig;
+  preferredDefaultColorHex: string | null;
+  highlightFilterKey: Step3FilterKey | null;
 
   constructor() {
-    makeObservable(this);
     this.config = strapConfig;
     this.selectedStrapTypeId = null;
     this.selectedLeatherTypeId = null;
@@ -62,6 +61,39 @@ class StrapConfiguratorStore {
     this.activeView = 'front';
     this.preferredDefaultColorHex = null;
     this.highlightFilterKey = null;
+    makeObservable(this, {
+      selectedStrapTypeId: observable,
+      selectedLeatherTypeId: observable,
+      selectedLeatherColorId: observable,
+      selectedEdgeTypeId: observable,
+      selectedStitchTypeId: observable,
+      selectedBuckleColorId: observable,
+      selectedBuckleVariant: observable,
+      selectedAdapterColorId: observable,
+      activeView: observable,
+      config: observable,
+      preferredDefaultColorHex: observable,
+      highlightFilterKey: observable,
+      strapTypes: computed,
+      currentStrapType: computed,
+      currentLeatherType: computed,
+      isConfigurationComplete: computed,
+      configurationMessage: computed,
+      missingFilterKey: computed,
+      resetSelection: action,
+      setHighlightFilterKey: action,
+      initializeFromStrapType: action,
+      setConfig: action,
+      setPreferredDefaultColorHex: action,
+      setActiveView: action,
+      setLeatherType: action,
+      setLeatherColor: action,
+      setEdgeType: action,
+      setStitchType: action,
+      setBuckleColor: action,
+      setBuckleVariant: action,
+      setAdapterColor: action
+    });
     this.hydrateState();
   }
 
@@ -113,7 +145,7 @@ class StrapConfiguratorStore {
     }
   };
 
-  @action resetSelection = () => {
+  resetSelection = () => {
     this.selectedStrapTypeId = null;
     this.selectedLeatherTypeId = null;
     this.selectedLeatherColorId = null;
@@ -127,11 +159,11 @@ class StrapConfiguratorStore {
     this.saveState();
   };
 
-  @computed get strapTypes(): StrapTypeConfig[] {
+  get strapTypes(): StrapTypeConfig[] {
     return this.config.strapTypes;
   }
 
-  @computed get currentStrapType(): StrapTypeConfig | null {
+  get currentStrapType(): StrapTypeConfig | null {
     if (!this.selectedStrapTypeId) {
       return null;
     }
@@ -139,7 +171,7 @@ class StrapConfiguratorStore {
     return this.strapTypes.find((type) => type.id === this.selectedStrapTypeId) ?? null;
   }
 
-  @computed get currentLeatherType(): StrapLeatherTypeOption | null {
+  get currentLeatherType(): StrapLeatherTypeOption | null {
     if (!this.currentStrapType || !this.selectedLeatherTypeId) {
       return null;
     }
@@ -149,7 +181,7 @@ class StrapConfiguratorStore {
     );
   }
 
-  @computed get isConfigurationComplete(): boolean {
+  get isConfigurationComplete(): boolean {
     return Boolean(
       this.selectedStrapTypeId &&
         this.selectedLeatherTypeId &&
@@ -161,7 +193,7 @@ class StrapConfiguratorStore {
     );
   }
 
-  @computed get configurationMessage(): string {
+  get configurationMessage(): string {
     if (!this.selectedLeatherTypeId) {
       return 'Выберите тип кожи';
     }
@@ -184,7 +216,7 @@ class StrapConfiguratorStore {
     return 'Все параметры ремешка выбраны';
   }
 
-  @computed get missingFilterKey(): Step3FilterKey | null {
+  get missingFilterKey(): Step3FilterKey | null {
     if (!this.selectedLeatherTypeId) return 'leatherType';
     if (!this.selectedLeatherColorId) return 'leatherColor';
     if (!this.selectedEdgeTypeId) return 'edge';
@@ -194,11 +226,11 @@ class StrapConfiguratorStore {
     return null;
   }
 
-  @action setHighlightFilterKey = (key: Step3FilterKey | null) => {
+  setHighlightFilterKey = (key: Step3FilterKey | null) => {
     this.highlightFilterKey = key;
   };
 
-  @action initializeFromStrapType = (strapTypeId: string) => {
+  initializeFromStrapType = (strapTypeId: string) => {
     const nextStrapType =
       this.strapTypes.find((type) => type.id === strapTypeId) ??
       this.strapTypes[0] ??
@@ -227,7 +259,7 @@ class StrapConfiguratorStore {
     this.saveState();
   };
 
-  @action setConfig = (config: StrapConfig) => {
+  setConfig = (config: StrapConfig) => {
     this.config = config;
     const type = this.strapTypes.find((item) => item.id === this.selectedStrapTypeId) ?? null;
     if (!type) {
@@ -274,16 +306,16 @@ class StrapConfiguratorStore {
     this.saveState();
   };
 
-  @action setPreferredDefaultColorHex = (hex: string | null) => {
+  setPreferredDefaultColorHex = (hex: string | null) => {
     this.preferredDefaultColorHex = hex;
   };
 
-  @action setActiveView = (view: StrapView) => {
+  setActiveView = (view: StrapView) => {
     this.activeView = view;
     this.saveState();
   };
 
-  @action setLeatherType = (leatherTypeId: string) => {
+  setLeatherType = (leatherTypeId: string) => {
     if (!this.currentStrapType) {
       return;
     }
@@ -312,31 +344,31 @@ class StrapConfiguratorStore {
     this.saveState();
   };
 
-  @action setLeatherColor = (leatherColorId: string) => {
+  setLeatherColor = (leatherColorId: string) => {
     if (this.highlightFilterKey === 'leatherColor') this.highlightFilterKey = null;
     this.selectedLeatherColorId = leatherColorId;
     this.saveState();
   };
 
-  @action setEdgeType = (edgeTypeId: string) => {
+  setEdgeType = (edgeTypeId: string) => {
     if (this.highlightFilterKey === 'edge') this.highlightFilterKey = null;
     this.selectedEdgeTypeId = edgeTypeId;
     this.saveState();
   };
 
-  @action setStitchType = (stitchTypeId: string) => {
+  setStitchType = (stitchTypeId: string) => {
     if (this.highlightFilterKey === 'stitch') this.highlightFilterKey = null;
     this.selectedStitchTypeId = stitchTypeId;
     this.saveState();
   };
 
-  @action setBuckleColor = (buckleColorId: string) => {
+  setBuckleColor = (buckleColorId: string) => {
     if (this.highlightFilterKey === 'buckle') this.highlightFilterKey = null;
     this.selectedBuckleColorId = buckleColorId;
     this.saveState();
   };
 
-  @action setBuckleVariant = (variant: BuckleVariant) => {
+  setBuckleVariant = (variant: BuckleVariant) => {
     if (variant === 'butterfly' && !this.currentStrapType?.buckleColors.hasButterfly) {
       this.selectedBuckleVariant = 'standard';
       this.saveState();
@@ -347,7 +379,7 @@ class StrapConfiguratorStore {
     this.saveState();
   };
 
-  @action setAdapterColor = (adapterColorId: string) => {
+  setAdapterColor = (adapterColorId: string) => {
     if (this.highlightFilterKey === 'adapter') this.highlightFilterKey = null;
     this.selectedAdapterColorId = adapterColorId;
     this.saveState();

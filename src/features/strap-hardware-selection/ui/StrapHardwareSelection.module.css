@@ -24,14 +24,14 @@
 
 .title {
   margin: 0 0 10px;
-  font-size: 12px;
+  font-size: var(--fs-xs);
   line-height: 120%;
   font-weight: 400;
   color: #676682;
 }
 
 .titleLabel {
-  font-size: 17px;
+  font-size: var(--fs-body-lg);
   line-height: 120%;
   font-weight: 500;
   color: #111111;
@@ -118,14 +118,14 @@
 }
 
 .variantTitle {
-  font-size: 14px;
+  font-size: var(--fs-body-sm);
   font-weight: 600;
   color: #111111;
   line-height: 130%;
 }
 
 .variantPrice {
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: #676682;
 }
 
@@ -194,7 +194,7 @@
 }
 
 .adapterLabel {
-  font-size: 14px;
+  font-size: var(--fs-body-sm);
   line-height: 130%;
   font-weight: 500;
   color: #3a3f55;
@@ -202,6 +202,6 @@
 
 @media (max-width: 959px) {
   .adapterLabel {
-    font-size: 12px;
+    font-size: var(--fs-xs);
   }
 }

@@ -147,13 +147,6 @@
   }
 }
 
-@media (max-width: 1440px) {
-  .skeleton {
-    padding-left: 68px;
-    padding-right: 68px;
-  }
-}
-
 @media (max-width: 960px) {
   .skeleton {
     padding: 24px 40px 56px;

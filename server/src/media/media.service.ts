@@ -35,12 +35,67 @@ export class MediaService {
     let ext = path.extname(originalName) || ".bin";
 
     if (!isPassthrough && isImage) {
-      const metadata = await sharp(file.buffer).metadata();
-      width = metadata.width ?? null;
-      height = metadata.height ?? null;
-      outputBuffer = await sharp(file.buffer).webp({ quality: 80 }).toBuffer();
-      outputMime = "image/webp";
-      ext = ".webp";
+      let meta: { width?: number; height?: number } | undefined;
+      try {
+        meta = await sharp(file.buffer, { failOn: "none" }).metadata();
+      } catch {
+        meta = undefined;
+      }
+      width = meta?.width ?? null;
+      height = meta?.height ?? null;
+
+      // Без rotate() и mozjpeg — на части сборок Windows libvips падает с «A boolean was expected».
+      type Encoded = { buffer: Buffer; mimeType: string; ext: string };
+      const attempts: (() => Promise<Encoded>)[] = [
+        async () => ({
+          buffer: await sharp(file.buffer, { failOn: "none" }).webp({ quality: 80 }).toBuffer(),
+          mimeType: "image/webp",
+          ext: ".webp"
+        }),
+        async () => ({
+          buffer: await sharp(file.buffer, { failOn: "none" }).jpeg({ quality: 85 }).toBuffer(),
+          mimeType: "image/jpeg",
+          ext: ".jpg"
+        }),
+        async () => ({
+          buffer: await sharp(file.buffer, { failOn: "none" }).png({ compressionLevel: 9 }).toBuffer(),
+          mimeType: "image/png",
+          ext: ".png"
+        })
+      ];
+
+      let encoded: Encoded | null = null;
+      for (const run of attempts) {
+        try {
+          encoded = await run();
+          break;
+        } catch {
+          /* следующий формат */
+        }
+      }
+
+      if (encoded) {
+        outputBuffer = encoded.buffer;
+        outputMime = encoded.mimeType;
+        ext = encoded.ext;
+      } else {
+        // Все перекодирования недоступны — сохраняем исходный файл как есть (тип уже проверен как image/*)
+        const mimeExt: Record<string, string> = {
+          "image/jpeg": ".jpg",
+          "image/jpg": ".jpg",
+          "image/png": ".png",
+          "image/bmp": ".bmp",
+          "image/tiff": ".tiff",
+          "image/avif": ".avif",
+          "image/heic": ".heic",
+          "image/heif": ".heif",
+          "image/webp": ".webp"
+        };
+        const fromName = path.extname(originalName).toLowerCase();
+        ext = mimeExt[file.mimetype] ?? (fromName.length > 1 ? fromName : ".jpg");
+        outputMime = file.mimetype;
+        outputBuffer = file.buffer;
+      }
     } else if (isPassthrough) {
       if (file.mimetype === "image/svg+xml") {
         ext = ".svg";

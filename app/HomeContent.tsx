@@ -1,21 +1,29 @@
 "use client";
 
 import { observer } from "mobx-react";
-import { Suspense, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import dynamic from "next/dynamic";
 import { Header } from "@/src/widgets/header";
-import { HeaderInfoModal } from "@/src/features/header-info-modal";
 import { headerStore } from "@/src/entities/header";
 import { Footer } from "@/src/widgets/footer";
 import { ProgressBar } from "@/src/widgets/progress-bar";
 import { progressBarStore } from "@/src/entities/progress-bar";
 import { TitleStepsSection } from "@/src/features/title-section";
-import { WatchModelSelection } from "@/src/features/watch-model-selection";
-import { FrameColors } from "@/src/features/frame-colors-selection";
-import { StrapModelSelection } from "@/features/strap-model-selection";
-import { StrapConfigurator } from "@/src/widgets/strap-configurator";
-import { CheckoutStep } from "@/src/widgets/checkout-step";
-import { PageSkeleton } from "@/src/shared/ui";
+import { StartPage } from "@/src/features/start-page";
+import WatchModelSelection from "@/src/features/watch-model-selection/ui/WatchModelSelection";
+import FrameColors from "@/src/features/frame-colors-selection/ui/FrameColors";
+import StrapModelSelection from "@/src/features/strap-model-selection/ui/StrapModelSelection";
+import StrapConfigurator from "@/src/widgets/strap-configurator/ui/StrapConfigurator";
+import { buildCaseStepRoute, buildHomeStepRoute, APP_ROUTES } from "@/src/shared/config/routes";
+import { CASE_CONFIG_STEPS, isStepInRange, WATCH_CONFIG_STEPS } from "@/src/shared/config/steps";
+
+const HeaderInfoModal = dynamic(
+  () => import("@/src/features/header-info-modal/ui/HeaderInfoModal").then((m) => m.default)
+);
+const CheckoutStep = dynamic(
+  () => import("@/src/widgets/checkout-step/ui/CheckoutStep").then((m) => m.default)
+);
 
 function StepContent({ step }: { step: number }) {
   switch (step) {
@@ -37,87 +45,98 @@ function StepContent({ step }: { step: number }) {
   }
 }
 
+function parseConfiguratorStep(searchParams: ReturnType<typeof useSearchParams>): number | null {
+  const raw = searchParams.get("step");
+  if (raw == null) return null;
+  const step = parseInt(raw, 10);
+  if (!isStepInRange(step, WATCH_CONFIG_STEPS.min, WATCH_CONFIG_STEPS.max)) return null;
+  return step;
+}
+
 const HomeContentInner = observer(() => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { currentStep } = progressBarStore;
   const isUrlUpdateRef = useRef(false);
-  const hasInitialSyncRef = useRef(false);
+  const configStep = parseConfiguratorStep(searchParams);
+  const isConfigurator = configStep !== null;
 
-  // Один раз при монтировании: читаем step из URL и выставляем store; если step нет — редирект на ?step=1
   useEffect(() => {
-    if (hasInitialSyncRef.current) return;
-    hasInitialSyncRef.current = true;
-    const stepFromUrl = searchParams.get("step");
-    if (stepFromUrl) {
-      const step = parseInt(stepFromUrl, 10);
-      if (step >= 1 && step <= 4) {
-        isUrlUpdateRef.current = true;
-        progressBarStore.setCurrentStep(step);
-        const actualStep = progressBarStore.currentStep;
-        if (actualStep !== step) {
-          router.replace(`/?step=${actualStep}`, { scroll: false });
-        }
-      }
-    } else {
-      router.replace("/?step=1", { scroll: false });
+    const raw = searchParams.get("step");
+    if (!raw) return;
+    const step = parseInt(raw, 10);
+    if (!isStepInRange(step, WATCH_CONFIG_STEPS.min, WATCH_CONFIG_STEPS.max)) {
+      router.replace(APP_ROUTES.home, { scroll: false });
     }
+  }, [searchParams, router]);
+
+  useEffect(() => {
     window.scrollTo(0, 0);
   }, [searchParams]);
 
-  // При смене searchParams (назад/вперёд по истории или после редиректа): синхронизируем URL -> store
   useEffect(() => {
-    if (!hasInitialSyncRef.current) return;
     const stepFromUrl = searchParams.get("step");
     if (!stepFromUrl) return;
     const step = parseInt(stepFromUrl, 10);
-    if (step >= 1 && step <= 4 && step !== progressBarStore.currentStep) {
+    if (!isStepInRange(step, WATCH_CONFIG_STEPS.min, WATCH_CONFIG_STEPS.max)) return;
+    if (step !== progressBarStore.currentStep) {
       isUrlUpdateRef.current = true;
       progressBarStore.setCurrentStep(step);
     }
-  }, [searchParams]);
+    const actualStep = progressBarStore.currentStep;
+    if (actualStep !== step) {
+      router.replace(buildHomeStepRoute(actualStep), { scroll: false });
+    }
+  }, [searchParams, router]);
 
-  // При смене шага в сторе (кнопка Далее/Назад): обновляем URL
   useEffect(() => {
     if (isUrlUpdateRef.current) {
       isUrlUpdateRef.current = false;
       return;
     }
+    if (!isConfigurator) return;
     const stepFromUrl = searchParams.get("step");
     const urlStep = stepFromUrl ? parseInt(stepFromUrl, 10) : null;
     if (urlStep !== currentStep) {
-      router.replace(`/?step=${currentStep}`, { scroll: false });
+      router.replace(buildHomeStepRoute(currentStep), { scroll: false });
     }
-  }, [currentStep, searchParams]);
+  }, [currentStep, searchParams, isConfigurator, router]);
 
-  // Обработка навигации браузера (кнопка "назад"/"вперед")
   useEffect(() => {
     const handlePopState = () => {
       const params = new URLSearchParams(window.location.search);
       const stepFromUrl = params.get("step");
-      if (stepFromUrl) {
-        const step = parseInt(stepFromUrl, 10);
-        if (step >= 1 && step <= 4 && step !== currentStep) {
-          isUrlUpdateRef.current = true;
-          progressBarStore.setCurrentStep(step);
-          const actualStep = progressBarStore.currentStep;
-          if (actualStep !== step) {
-            router.replace(`/?step=${actualStep}`, { scroll: false });
-          }
+      if (!stepFromUrl) return;
+      const step = parseInt(stepFromUrl, 10);
+      if (isStepInRange(step, WATCH_CONFIG_STEPS.min, WATCH_CONFIG_STEPS.max) && step !== currentStep) {
+        isUrlUpdateRef.current = true;
+        progressBarStore.setCurrentStep(step);
+        const actualStep = progressBarStore.currentStep;
+        if (actualStep !== step) {
+          router.replace(buildHomeStepRoute(actualStep), { scroll: false });
         }
       }
     };
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
-  }, [currentStep]);
+  }, [currentStep, router]);
 
   return (
     <div>
       <main className={headerStore.isOpenModal ? "blur-[15px]" : ""}>
         <Header />
-        <TitleStepsSection />
-        <ProgressBar />
-        <StepContent step={currentStep} />
+        {isConfigurator ? (
+          <>
+            <TitleStepsSection />
+            <ProgressBar />
+            <StepContent step={currentStep} />
+          </>
+        ) : (
+          <StartPage
+            onChooseWatch={() => router.push(buildHomeStepRoute(WATCH_CONFIG_STEPS.initial))}
+            onChooseIphone={() => router.push(buildCaseStepRoute(CASE_CONFIG_STEPS.initial))}
+          />
+        )}
         <Footer />
       </main>
       <HeaderInfoModal />
@@ -126,9 +145,5 @@ const HomeContentInner = observer(() => {
 });
 
 export default function HomeContent() {
-  return (
-    <Suspense fallback={<PageSkeleton />}>
-      <HomeContentInner />
-    </Suspense>
-  );
+  return <HomeContentInner />;
 }

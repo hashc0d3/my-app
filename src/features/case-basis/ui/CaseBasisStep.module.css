@@ -1,0 +1,231 @@
+.section {
+  padding-left: 68px;
+  padding-right: 68px;
+  padding-bottom: 90px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 68px;
+}
+
+@media (min-width: 641px) {
+  .section {
+    grid-template-columns: minmax(0, 56fr) minmax(0, 44fr);
+    align-items: start;
+  }
+}
+
+@media (max-width: 1399px) {
+  .section {
+    gap: 64px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .section {
+    padding-left: 50px;
+    padding-right: 50px;
+    gap: 56px;
+  }
+}
+
+@media (max-width: 960px) {
+  .section {
+    padding-left: 40px;
+    padding-right: 40px;
+    gap: 46px;
+  }
+}
+
+@media (max-width: 640px) {
+  .section {
+    padding-left: 20px;
+    padding-right: 20px;
+    gap: 30px;
+    padding-bottom: 48px;
+  }
+}
+
+.previewColumn {
+  align-self: flex-start;
+  position: sticky;
+  top: 120px;
+}
+
+@media (max-width: 640px) {
+  .previewColumn {
+    position: sticky;
+    top: 110px;
+    z-index: 2;
+    background: #ffffff;
+    border-bottom-left-radius: 30px;
+    border-bottom-right-radius: 30px;
+    padding: 10px;
+  }
+}
+
+.controlsPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.paramCard {
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 18px 18px 20px;
+  border: 1px solid #ececf2;
+}
+
+.stepBadge {
+  display: inline-block;
+  font-size: var(--fs-caption);
+  font-weight: 600;
+  color: #676682;
+  margin-bottom: 10px;
+}
+
+.cardTitle {
+  margin: 0 0 14px;
+  font-size: var(--fs-body-lg);
+  font-weight: 600;
+  color: #2f2c33;
+}
+
+.selectWrap {
+  position: relative;
+  width: 100%;
+}
+
+.selectTrigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-radius: 999px;
+  border: 1px solid #d8d8e4;
+  padding: 12px 14px 12px 16px;
+  font-size: var(--fs-body);
+  font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  background: #ffffff;
+  color: #2f2c33;
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.selectTrigger:hover {
+  border-color: #c5c8dc;
+}
+
+.selectTriggerIcon {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.selectMenu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  z-index: 20;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  border-radius: 16px;
+  border: 1px solid #ececf2;
+  background: #ffffff;
+  box-shadow: 0 12px 32px rgba(47, 44, 51, 0.12);
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.selectOption {
+  width: 100%;
+  border: none;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: var(--fs-body-sm);
+  font-family: var(--font-onest), ui-sans-serif, system-ui, sans-serif;
+  text-align: left;
+  background: transparent;
+  color: #2f2c33;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.selectOption:hover {
+  background: #f4f7fd;
+}
+
+.selectOptionActive {
+  background: #eef2fc;
+  font-weight: 600;
+}
+
+.toggleRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.toggle {
+  flex: 1;
+  min-width: 140px;
+  border-radius: 999px;
+  border: 1px solid #d8d8e4;
+  padding: 12px 16px;
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+  background: #ffffff;
+  color: #2f2c33;
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.toggleActive {
+  border-color: #5078df;
+  background: #f4f7fd;
+}
+
+.colorGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.colorChip {
+  display: flex;
+  align-items: center;
+  border-radius: 56px;
+  background: #f5f5f5;
+  padding: 10px 20px 10px 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.colorChipActive {
+  background: #ffffff;
+  border-color: #5078df;
+}
+
+.dot {
+  min-width: 20px;
+  max-width: 20px;
+  min-height: 20px;
+  border-radius: 9999px;
+  margin-right: 10px;
+}
+
+.colorName {
+  font-size: var(--fs-body-sm);
+  line-height: 1.2;
+}
+
+.empty {
+  font-size: var(--fs-body-sm);
+  color: #676682;
+}

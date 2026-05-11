@@ -5,9 +5,10 @@ import Image from "next/image";
 import { observer } from "mobx-react";
 import { appConfigStore } from "@/src/entities/app-config";
 import { cartStore, type CartItem } from "@/src/entities/cart";
-import type { CartItemConfiguration } from "@/src/shared/types/CartItemConfiguration";
+import type { CartItemConfiguration, CartStrapItemConfiguration } from "@/src/shared/types/CartItemConfiguration";
 import type { StrapTypeConfig } from "@/src/shared/types/StrapConfigTypes";
 import type { Step4SectionConfig } from "@/src/shared/types/AppConfigTypes";
+import { resolvePhoneCasePreviewUrls } from "@/src/shared/lib/phoneCaseConfig";
 import EditParameterModal, {
   type EngravingConfig,
   type InitialsConfig,
@@ -58,6 +59,24 @@ type Props = {
 const isWristSection = (id?: string, title?: string) =>
   id === "step4-card-wrist" || String(title ?? "").trim().toLowerCase() === "обхват запястья";
 
+type PaletteColor = { id: string; name: string; hex: string };
+
+function resolveCaseColors(
+  variants: { colorId: string }[],
+  paletteById: Map<string, PaletteColor>
+): PaletteColor[] {
+  const result: PaletteColor[] = [];
+  const seen = new Set<string>();
+  for (const variant of variants) {
+    const id = String(variant.colorId ?? "").trim();
+    if (!id || seen.has(id)) continue;
+    seen.add(id);
+    const fromPalette = paletteById.get(id);
+    result.push(fromPalette ?? { id, name: id, hex: "#cccccc" });
+  }
+  return result;
+}
+
 const EditItemModal = observer(({ item, onClose }: Props) => {
   const initializedItemIdRef = useRef<string | null>(null);
   const watchModels = appConfigStore.config.watchModels ?? [];
@@ -67,7 +86,14 @@ const EditItemModal = observer(({ item, onClose }: Props) => {
   const addonSections = step4Sections.filter((s) => !isWristSection(s.id, s.title));
   const wristOptions = (wristSection?.options ?? []).filter((opt) => String(opt.label ?? "").trim() !== "");
 
-  const initialWatchModelId = item?.configuration?.watch.watchModelId ?? watchModels[0]?.id ?? 0;
+  const strapConfiguration: CartStrapItemConfiguration | null =
+    item?.configuration != null &&
+    item.configuration.productType !== "case" &&
+    "watch" in item.configuration
+      ? (item.configuration as CartStrapItemConfiguration)
+      : null;
+
+  const initialWatchModelId = strapConfiguration?.watch.watchModelId ?? watchModels[0]?.id ?? 0;
   const [watchModelId, setWatchModelId] = useState<number>(initialWatchModelId);
   const selectedWatchModel = useMemo(
     () => watchModels.find((m) => m.id === watchModelId) ?? watchModels[0],
@@ -75,14 +101,14 @@ const EditItemModal = observer(({ item, onClose }: Props) => {
   );
 
   const [watchSize, setWatchSize] = useState<number>(
-    item?.configuration?.watch.watchSize ?? selectedWatchModel?.sizes?.[0] ?? 0
+    strapConfiguration?.watch.watchSize ?? selectedWatchModel?.sizes?.[0] ?? 0
   );
   const [watchColorHex, setWatchColorHex] = useState<string>(
-    item?.configuration?.watch.watchColorHex ?? selectedWatchModel?.colors?.[0]?.hex ?? ""
+    strapConfiguration?.watch.watchColorHex ?? selectedWatchModel?.colors?.[0]?.hex ?? ""
   );
 
   const [strapModelId, setStrapModelId] = useState<number>(
-    item?.configuration?.strap.strapModelId ?? strapModels[0]?.id ?? 0
+    strapConfiguration?.strap.strapModelId ?? strapModels[0]?.id ?? 0
   );
   const selectedStrapModel = useMemo(
     () => strapModels.find((m) => m.id === strapModelId) ?? strapModels[0],
@@ -91,7 +117,7 @@ const EditItemModal = observer(({ item, onClose }: Props) => {
   const strapTypes = selectedStrapModel?.step3Config?.strapTypes ?? [];
 
   const [strapTypeId, setStrapTypeId] = useState<string>(
-    item?.configuration?.step3.strapTypeId ?? strapTypes[0]?.id ?? ""
+    strapConfiguration?.step3.strapTypeId ?? strapTypes[0]?.id ?? ""
   );
   const selectedStrapType: StrapTypeConfig | undefined = useMemo(
     () => strapTypes.find((t) => t.id === strapTypeId) ?? strapTypes[0],
@@ -100,7 +126,7 @@ const EditItemModal = observer(({ item, onClose }: Props) => {
 
   const leatherTypes = selectedStrapType?.leatherTypes ?? [];
   const [leatherTypeId, setLeatherTypeId] = useState<string>(
-    item?.configuration?.step3.leatherTypeId ?? leatherTypes[0]?.id ?? ""
+    strapConfiguration?.step3.leatherTypeId ?? leatherTypes[0]?.id ?? ""
   );
   const selectedLeatherType = useMemo(
     () => leatherTypes.find((t) => t.id === leatherTypeId) ?? leatherTypes[0],
@@ -112,27 +138,68 @@ const EditItemModal = observer(({ item, onClose }: Props) => {
   const stitchTypes = selectedLeatherType?.stitchTypes ?? [];
 
   const [leatherColorId, setLeatherColorId] = useState<string>(
-    item?.configuration?.step3.leatherColorId ?? leatherColors[0]?.id ?? ""
+    strapConfiguration?.step3.leatherColorId ?? leatherColors[0]?.id ?? ""
   );
-  const [edgeTypeId, setEdgeTypeId] = useState<string>(item?.configuration?.step3.edgeTypeId ?? edgeTypes[0]?.id ?? "");
+  const [edgeTypeId, setEdgeTypeId] = useState<string>(strapConfiguration?.step3.edgeTypeId ?? edgeTypes[0]?.id ?? "");
   const [stitchTypeId, setStitchTypeId] = useState<string>(
-    item?.configuration?.step3.stitchTypeId ?? stitchTypes[0]?.id ?? ""
+    strapConfiguration?.step3.stitchTypeId ?? stitchTypes[0]?.id ?? ""
   );
 
   const buckleColors = (selectedStrapType?.buckleColors.options ?? []).filter((x) => !x.isHidden);
   const adapterColors = (selectedStrapType?.adapterColors ?? []).filter((x) => !x.isHidden);
   const [buckleColorId, setBuckleColorId] = useState<string>(
-    item?.configuration?.step3.buckleColorId ?? buckleColors[0]?.id ?? ""
+    strapConfiguration?.step3.buckleColorId ?? buckleColors[0]?.id ?? ""
   );
   const [buckleVariant, setBuckleVariant] = useState<"standard" | "butterfly">(
-    item?.configuration?.step3.buckleVariant ?? "standard"
+    strapConfiguration?.step3.buckleVariant ?? "standard"
   );
   const [adapterColorId, setAdapterColorId] = useState<string>(
-    item?.configuration?.step3.adapterColorId ?? adapterColors[0]?.id ?? ""
+    strapConfiguration?.step3.adapterColorId ?? adapterColors[0]?.id ?? ""
+  );
+  const colorPalette = appConfigStore.config.colorLibrary ?? [];
+  const paletteById = useMemo(
+    () => new Map(colorPalette.map((color) => [color.id, color])),
+    [colorPalette]
+  );
+  const caseConfig = appConfigStore.config.phoneCase;
+  const caseModels = caseConfig?.iphoneModels ?? [];
+  const caseFormTypes = caseConfig?.formTypes ?? [];
+  const [caseIphoneModelId, setCaseIphoneModelId] = useState<string>(
+    item?.configuration?.productType === "case" ? item.configuration.iphoneModelId : caseModels[0]?.id ?? ""
+  );
+  const [caseFormTypeId, setCaseFormTypeId] = useState<string>(
+    item?.configuration?.productType === "case"
+      ? item.configuration.caseFormTypeId ?? caseFormTypes[0]?.id ?? ""
+      : caseFormTypes[0]?.id ?? ""
+  );
+  const selectedCaseFormType = useMemo(
+    () => caseFormTypes.find((type) => type.id === caseFormTypeId) ?? caseFormTypes[0],
+    [caseFormTypes, caseFormTypeId]
+  );
+  const caseOutsideColors = useMemo(
+    () => resolveCaseColors(selectedCaseFormType?.outsideVariants ?? [], paletteById),
+    [selectedCaseFormType, paletteById]
+  );
+  const caseInsideColors = useMemo(
+    () => resolveCaseColors(selectedCaseFormType?.insideVariants ?? [], paletteById),
+    [selectedCaseFormType, paletteById]
+  );
+  const [caseOutsideColorId, setCaseOutsideColorId] = useState<string>(
+    item?.configuration?.productType === "case"
+      ? item.configuration.outsideColorId
+      : caseOutsideColors[0]?.id ?? ""
+  );
+  const [caseInsideColorId, setCaseInsideColorId] = useState<string>(
+    item?.configuration?.productType === "case"
+      ? item.configuration.insideColorId
+      : caseInsideColors[0]?.id ?? ""
+  );
+  const [casePersonalizationNote, setCasePersonalizationNote] = useState<string>(
+    item?.configuration?.productType === "case" ? item.configuration.personalizationNote ?? "" : ""
   );
 
   const [wristOptionId, setWristOptionId] = useState<string>(
-    item?.configuration?.step4.wristOptionId ?? wristOptions[0]?.id ?? ""
+    strapConfiguration?.step4.wristOptionId ?? wristOptions[0]?.id ?? ""
   );
   /** Открыто ли модальное окно редактирования параметра: null | 'wrist' | cardId аддона */
   const [editParamKey, setEditParamKey] = useState<null | "wrist" | string>(null);
@@ -144,7 +211,7 @@ const EditItemModal = observer(({ item, onClose }: Props) => {
   const [packageByCardId, setPackageByCardId] = useState<Record<string, PackageConfig>>({});
   const [selectedAddons, setSelectedAddons] = useState<Record<string, boolean>>(() => {
     const next: Record<string, boolean> = {};
-    (item?.configuration?.step4.addonCardIds ?? []).forEach((id: string) => {
+    (strapConfiguration?.step4.addonCardIds ?? []).forEach((id: string) => {
       next[id] = true;
     });
     return next;
@@ -158,59 +225,82 @@ const EditItemModal = observer(({ item, onClose }: Props) => {
     if (initializedItemIdRef.current === item.id) return;
     initializedItemIdRef.current = item.id;
 
-    const cfg = item.configuration;
-    const defaultWatchModel = watchModels.find((m) => m.id === (cfg?.watch.watchModelId ?? -1)) ?? watchModels[0];
-    const defaultStrapModel = strapModels.find((m) => m.id === (cfg?.strap.strapModelId ?? -1)) ?? strapModels[0];
+    if (!item.configuration || item.configuration.productType === "case" || !("watch" in item.configuration)) {
+      return;
+    }
+    const cfg = item.configuration as CartStrapItemConfiguration;
+    const defaultWatchModel = watchModels.find((m) => m.id === (cfg.watch.watchModelId ?? -1)) ?? watchModels[0];
+    const defaultStrapModel = strapModels.find((m) => m.id === (cfg.strap.strapModelId ?? -1)) ?? strapModels[0];
     const defaultStrapTypes = defaultStrapModel?.step3Config?.strapTypes ?? [];
     const defaultStrapType =
-      defaultStrapTypes.find((t) => t.id === (cfg?.step3.strapTypeId ?? "")) ?? defaultStrapTypes[0];
+      defaultStrapTypes.find((t) => t.id === (cfg.step3.strapTypeId ?? "")) ?? defaultStrapTypes[0];
     const defaultLeatherType =
-      defaultStrapType?.leatherTypes.find((t) => t.id === (cfg?.step3.leatherTypeId ?? "")) ??
+      defaultStrapType?.leatherTypes.find((t) => t.id === (cfg.step3.leatherTypeId ?? "")) ??
       defaultStrapType?.leatherTypes[0];
     setWatchModelId(defaultWatchModel?.id ?? 0);
-    setWatchSize(cfg?.watch.watchSize ?? defaultWatchModel?.sizes?.[0] ?? 0);
-    setWatchColorHex(cfg?.watch.watchColorHex ?? defaultWatchModel?.colors?.[0]?.hex ?? "");
+    setWatchSize(cfg.watch.watchSize ?? defaultWatchModel?.sizes?.[0] ?? 0);
+    setWatchColorHex(cfg.watch.watchColorHex ?? defaultWatchModel?.colors?.[0]?.hex ?? "");
     setStrapModelId(defaultStrapModel?.id ?? 0);
     setStrapTypeId(defaultStrapType?.id ?? "");
     setLeatherTypeId(defaultLeatherType?.id ?? "");
     setLeatherColorId(
-      cfg?.step3.leatherColorId ??
+      cfg.step3.leatherColorId ??
         defaultLeatherType?.leatherColors?.find((x) => !x.isHidden)?.id ??
         defaultLeatherType?.leatherColors?.[0]?.id ??
         ""
     );
     setEdgeTypeId(
-      cfg?.step3.edgeTypeId ??
+      cfg.step3.edgeTypeId ??
         defaultLeatherType?.edgeTypes?.find((x) => !x.isHidden)?.id ??
         defaultLeatherType?.edgeTypes?.[0]?.id ??
         ""
     );
     setStitchTypeId(
-      cfg?.step3.stitchTypeId ??
+      cfg.step3.stitchTypeId ??
         defaultLeatherType?.stitchTypes?.find((x) => !x.isHidden)?.id ??
         defaultLeatherType?.stitchTypes?.[0]?.id ??
         ""
     );
     setBuckleColorId(
-      cfg?.step3.buckleColorId ??
+      cfg.step3.buckleColorId ??
         defaultStrapType?.buckleColors.options?.find((x) => !x.isHidden)?.id ??
         defaultStrapType?.buckleColors.options?.[0]?.id ??
         ""
     );
     setAdapterColorId(
-      cfg?.step3.adapterColorId ??
+      cfg.step3.adapterColorId ??
         defaultStrapType?.adapterColors?.find((x) => !x.isHidden)?.id ??
         defaultStrapType?.adapterColors?.[0]?.id ??
         ""
     );
-    setBuckleVariant(cfg?.step3.buckleVariant ?? "standard");
-    setWristOptionId(cfg?.step4.wristOptionId ?? wristOptions[0]?.id ?? "");
+    setBuckleVariant(cfg.step3.buckleVariant ?? "standard");
+    setWristOptionId(cfg.step4.wristOptionId ?? wristOptions[0]?.id ?? "");
     const next: Record<string, boolean> = {};
-    (cfg?.step4.addonCardIds ?? []).forEach((id: string) => {
+    (cfg.step4.addonCardIds ?? []).forEach((id: string) => {
       next[id] = true;
     });
     setSelectedAddons(next);
   }, [item?.id]);
+
+  useEffect(() => {
+    if (!item || item.configuration?.productType !== "case") return;
+    const cfg = item.configuration;
+    setCaseIphoneModelId(cfg.iphoneModelId ?? caseModels[0]?.id ?? "");
+    setCaseFormTypeId(cfg.caseFormTypeId ?? caseFormTypes[0]?.id ?? "");
+    setCaseOutsideColorId(cfg.outsideColorId ?? "");
+    setCaseInsideColorId(cfg.insideColorId ?? "");
+    setCasePersonalizationNote(cfg.personalizationNote ?? "");
+  }, [item?.id, caseModels, caseFormTypes]);
+
+  useEffect(() => {
+    if (!selectedCaseFormType) return;
+    if (!caseOutsideColors.some((color) => color.id === caseOutsideColorId)) {
+      setCaseOutsideColorId(caseOutsideColors[0]?.id ?? "");
+    }
+    if (!caseInsideColors.some((color) => color.id === caseInsideColorId)) {
+      setCaseInsideColorId(caseInsideColors[0]?.id ?? "");
+    }
+  }, [selectedCaseFormType, caseOutsideColors, caseInsideColors, caseOutsideColorId, caseInsideColorId]);
 
   useEffect(() => {
     if (!selectedWatchModel) return;
@@ -334,6 +424,7 @@ const EditItemModal = observer(({ item, onClose }: Props) => {
     });
 
     const configuration: CartItemConfiguration = {
+      productType: "strap",
       watch: {
         watchModelId: selectedWatchModel?.id ?? 0,
         watchModelName: selectedWatchModel?.model ?? "",
@@ -383,6 +474,174 @@ const EditItemModal = observer(({ item, onClose }: Props) => {
         : addonSections.find((s, i) => (s.id || `step4-card-${i}`) === editParamKey);
 
   if (!item) return null;
+
+  if (item.configuration?.productType === "case") {
+    const cc = item.configuration;
+    const selectedCaseModel = caseModels.find((model) => model.id === caseIphoneModelId) ?? caseModels[0];
+    const selectedOutsideColor = caseOutsideColors.find((color) => color.id === caseOutsideColorId) ?? caseOutsideColors[0];
+    const selectedInsideColor = caseInsideColors.find((color) => color.id === caseInsideColorId) ?? caseInsideColors[0];
+    const caseUnitPrice = selectedCaseFormType?.price ?? 0;
+    const casePreview = resolvePhoneCasePreviewUrls(
+      caseConfig,
+      selectedCaseFormType?.id ?? null,
+      selectedOutsideColor?.id ?? null,
+      selectedInsideColor?.id ?? null
+    );
+    const caseSave = () => {
+      if (!selectedCaseModel || !selectedCaseFormType || !selectedOutsideColor || !selectedInsideColor) return;
+      const parameters = [
+        `Модель: ${selectedCaseModel.label}`,
+        `Тип формы: ${selectedCaseFormType.label?.trim() || selectedCaseFormType.id}`,
+        `Цвет снаружи: ${selectedOutsideColor.name}`,
+        `Цвет внутри: ${selectedInsideColor.name}`
+      ];
+      const normalizedNote = casePersonalizationNote.trim();
+      if (normalizedNote) {
+        parameters.push(`Комментарий: ${normalizedNote}`);
+      }
+      const configuration: CartItemConfiguration = {
+        productType: "case",
+        iphoneModelId: selectedCaseModel.id,
+        iphoneModelLabel: selectedCaseModel.label,
+        caseFormTypeId: selectedCaseFormType.id,
+        caseFormTypeLabel: selectedCaseFormType.label?.trim() || selectedCaseFormType.id,
+        outsideColorId: selectedOutsideColor.id,
+        outsideColorName: selectedOutsideColor.name,
+        outsideHex: selectedOutsideColor.hex,
+        insideColorId: selectedInsideColor.id,
+        insideColorName: selectedInsideColor.name,
+        insideHex: selectedInsideColor.hex,
+        personalizationNote: normalizedNote || undefined
+      };
+      cartStore.updateItem(item.id, {
+        title: `Чехол iPhone — ${selectedCaseModel.label}`,
+        image: casePreview.main || item.image,
+        unitPrice: caseUnitPrice,
+        parameters,
+        configuration
+      });
+      onClose();
+    };
+    return (
+      <div className={styles.overlay} onClick={onClose}>
+        <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+          <header className={styles.header}>
+            <h2 className={styles.title}>Редактирование чехла</h2>
+            <button type="button" className={styles.closeBtn} onClick={onClose} aria-label="Закрыть">
+              <Image src="/closeIcon.svg" alt="" width={40} height={40} />
+            </button>
+          </header>
+          <div className={styles.layout}>
+            <div className={styles.previewColumn}>
+              <div className={styles.media}>
+                {casePreview.main ? (
+                  <div className={styles.mediaLayer}>
+                    <Image src={casePreview.main} alt="" fill className={styles.mediaImage} sizes="(max-width: 960px) 100vw, 44vw" />
+                  </div>
+                ) : null}
+              </div>
+            </div>
+            <div className={styles.right}>
+              <h3 className={styles.strapTitle}>Чехол iPhone — {selectedCaseModel?.label ?? cc.iphoneModelLabel}</h3>
+              <details className={styles.section} open>
+                <summary className={styles.summary}>
+                  <span className={styles.summaryLabel}>1/3 • Модель iPhone</span>
+                  <span className={styles.summaryIconWrap}>
+                    <Image src="/listOpenIcon.svg" alt="" width={20} height={20} className={styles.summaryIconOpen} />
+                    <Image src="/listCloseIcon.svg" alt="" width={20} height={20} className={styles.summaryIconClose} />
+                  </span>
+                </summary>
+                <div className={styles.content}>
+                  <div className={styles.row}>
+                    <span className={styles.label}>Модель iPhone</span>
+                    <select className={styles.select} value={caseIphoneModelId} onChange={(e) => setCaseIphoneModelId(e.target.value)}>
+                      {caseModels.map((model) => (
+                        <option key={model.id} value={model.id}>
+                          {model.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </details>
+              <details className={styles.section} open>
+                <summary className={styles.summary}>
+                  <span className={styles.summaryLabel}>2/3 • Дизайн чехла</span>
+                  <span className={styles.summaryIconWrap}>
+                    <Image src="/listOpenIcon.svg" alt="" width={20} height={20} className={styles.summaryIconOpen} />
+                    <Image src="/listCloseIcon.svg" alt="" width={20} height={20} className={styles.summaryIconClose} />
+                  </span>
+                </summary>
+                <div className={styles.content}>
+                  <div className={styles.row}>
+                    <span className={styles.label}>Тип формы</span>
+                    <select className={styles.select} value={caseFormTypeId} onChange={(e) => setCaseFormTypeId(e.target.value)}>
+                      {caseFormTypes.map((type) => (
+                        <option key={type.id} value={type.id}>
+                          {type.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className={styles.row}>
+                    <span className={styles.label}>Цвет снаружи</span>
+                    <select className={styles.select} value={caseOutsideColorId} onChange={(e) => setCaseOutsideColorId(e.target.value)}>
+                      {caseOutsideColors.map((color) => (
+                        <option key={color.id} value={color.id}>
+                          {color.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className={styles.row}>
+                    <span className={styles.label}>Цвет внутри</span>
+                    <select className={styles.select} value={caseInsideColorId} onChange={(e) => setCaseInsideColorId(e.target.value)}>
+                      {caseInsideColors.map((color) => (
+                        <option key={color.id} value={color.id}>
+                          {color.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </details>
+              <details className={styles.section} open>
+                <summary className={styles.summary}>
+                  <span className={styles.summaryLabel}>3/3 • Персонализация чехла</span>
+                  <span className={styles.summaryIconWrap}>
+                    <Image src="/listOpenIcon.svg" alt="" width={20} height={20} className={styles.summaryIconOpen} />
+                    <Image src="/listCloseIcon.svg" alt="" width={20} height={20} className={styles.summaryIconClose} />
+                  </span>
+                </summary>
+                <div className={styles.content}>
+                  <div className={styles.paramBlock}>
+                    <span className={styles.label}>Комментарий</span>
+                    <textarea
+                      className={styles.textarea}
+                      value={casePersonalizationNote}
+                      onChange={(e) => setCasePersonalizationNote(e.target.value.slice(0, 500))}
+                      placeholder="Пожелания по персонализации (необязательно)"
+                      rows={4}
+                    />
+                  </div>
+                </div>
+              </details>
+              <div className={styles.footer}>
+                <div className={styles.total}>
+                  <span>Итого</span>
+                  <span className={styles.dots} />
+                  <span>{caseUnitPrice.toLocaleString("ru-RU")} ₽</span>
+                </div>
+                <button type="button" className={styles.submit} onClick={caseSave}>
+                  Завершить редактирование
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.overlay} onClick={onClose}>
@@ -478,16 +737,18 @@ const EditItemModal = observer(({ item, onClose }: Props) => {
                     ))}
                   </select>
                 </div>
-                <div className={styles.row}>
-                  <span className={styles.label}>Тип ремешка</span>
-                  <select className={styles.select} value={strapTypeId} onChange={(e) => setStrapTypeId(e.target.value)}>
-                    {strapTypes.map((type) => (
-                      <option key={type.id} value={type.id}>
-                        {type.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+                {strapTypes.length > 1 ? (
+                  <div className={styles.row}>
+                    <span className={styles.label}>Тип ремешка</span>
+                    <select className={styles.select} value={strapTypeId} onChange={(e) => setStrapTypeId(e.target.value)}>
+                      {strapTypes.map((type) => (
+                        <option key={type.id} value={type.id}>
+                          {type.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : null}
                 <div className={styles.row}>
                   <span className={styles.label}>Тип кожи</span>
                   <select className={styles.select} value={leatherTypeId} onChange={(e) => setLeatherTypeId(e.target.value)}>

@@ -13,18 +13,34 @@ export type CartItem = {
 };
 
 class CartStore {
-  @observable itemsList: CartItem[];
-  @observable promoCode: string;
-  @observable promoDiscount: number;
+  itemsList: CartItem[];
+  promoCode: string;
+  promoDiscount: number;
   private readonly storageKey = "my-app/cart";
-  @observable hydrated: boolean;
+  hydrated: boolean;
 
   constructor() {
-    makeObservable(this);
     this.itemsList = [];
     this.promoCode = "";
     this.promoDiscount = 0;
     this.hydrated = false;
+    makeObservable(this, {
+      itemsList: observable,
+      promoCode: observable,
+      promoDiscount: observable,
+      hydrated: observable,
+      items: computed,
+      subtotal: computed,
+      discountedSubtotal: computed,
+      hydrateState: action,
+      addConfiguredItem: action,
+      increaseItem: action,
+      decreaseItem: action,
+      removeItem: action,
+      updateItem: action,
+      setPromo: action,
+      clearPromo: action
+    });
   }
 
   private saveState = () => {
@@ -39,7 +55,7 @@ class CartStore {
     );
   };
 
-  @action hydrateState = () => {
+  hydrateState = () => {
     if (this.hydrated) return;
     if (typeof window === "undefined") return;
     if (process.env.NODE_ENV === "production") {
@@ -70,19 +86,19 @@ class CartStore {
     }
   };
 
-  @computed get items(): number {
+  get items(): number {
     return this.itemsList.reduce((acc, item) => acc + item.quantity, 0);
   }
 
-  @computed get subtotal(): number {
+  get subtotal(): number {
     return this.itemsList.reduce((acc, item) => acc + item.unitPrice * item.quantity, 0);
   }
 
-  @computed get discountedSubtotal(): number {
+  get discountedSubtotal(): number {
     return Math.max(0, this.subtotal - this.promoDiscount);
   }
 
-  @action addConfiguredItem = (item: Omit<CartItem, "id" | "quantity">) => {
+  addConfiguredItem = (item: Omit<CartItem, "id" | "quantity">) => {
     this.itemsList.push({
       ...item,
       id: `cart-${Date.now()}-${Math.random().toString(16).slice(2)}`,
@@ -91,14 +107,14 @@ class CartStore {
     this.saveState();
   };
 
-  @action increaseItem = (id: string) => {
+  increaseItem = (id: string) => {
     const target = this.itemsList.find((item) => item.id === id);
     if (!target) return;
     target.quantity += 1;
     this.saveState();
   };
 
-  @action decreaseItem = (id: string) => {
+  decreaseItem = (id: string) => {
     const target = this.itemsList.find((item) => item.id === id);
     if (!target) return;
     if (target.quantity > 1) {
@@ -110,25 +126,25 @@ class CartStore {
     this.saveState();
   };
 
-  @action removeItem = (id: string) => {
+  removeItem = (id: string) => {
     this.itemsList = this.itemsList.filter((item) => item.id !== id);
     this.saveState();
   };
 
-  @action updateItem = (id: string, payload: Partial<Omit<CartItem, "id" | "quantity">>) => {
+  updateItem = (id: string, payload: Partial<Omit<CartItem, "id" | "quantity">>) => {
     const item = this.itemsList.find((entry) => entry.id === id);
     if (!item) return;
     Object.assign(item, payload);
     this.saveState();
   };
 
-  @action setPromo = (code: string, discount: number) => {
+  setPromo = (code: string, discount: number) => {
     this.promoCode = code.trim();
     this.promoDiscount = Math.max(0, Math.round(discount));
     this.saveState();
   };
 
-  @action clearPromo = () => {
+  clearPromo = () => {
     this.promoCode = "";
     this.promoDiscount = 0;
     this.saveState();
